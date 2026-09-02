@@ -7,7 +7,7 @@ html {
 button {
     background-color: #f4efe6;
     color: #1a1a1a;
-    border: 1px, solid, #DDD7CC;
+    border: 1px solid #DDD7CC;
     border-radius: 8px;
     text-align: center;
     cursor:pointer;
