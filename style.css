@@ -4,7 +4,7 @@ button {
     background-color: #f4efe6;
     color: black;
     border: 1px, solid, #DDD7CC;
-    border-radius: 12px;
+    border-radius: 4px;
     text-align: center;
     cursor:pointer;
 }
