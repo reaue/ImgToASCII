@@ -4,4 +4,4 @@ A website that takes images or videos and transforms them into ASCII images or v
 
 ---
 
-![alt text](image.png)
+![alt text](result.png)
