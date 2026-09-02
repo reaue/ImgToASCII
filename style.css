@@ -1,13 +1,22 @@
 html {
+    background-color: #f4efe6;
     font-size: 16px;
     font-family: "Courier Prime", monospace;
 }
 
 button {
     background-color: #f4efe6;
-    color: black;
+    color: #1a1a1a;
     border: 1px, solid, #DDD7CC;
     border-radius: 8px;
     text-align: center;
     cursor:pointer;
+}
+
+body {
+    background-color: #f4efe6;
+    border: 2px solid #DDD7CC;
+    width: auto;
+    margin: auto auto;
+    padding: 20px 20px 20px 20px;
 }
