@@ -1,10 +1,15 @@
+html {
+    font-size: 16px;
+    font-family: "Courier Prime", monospace;
+}
+
 button {
     font-family: 'Courier New', Courier, monospace;
     font-size: 16px;
     background-color: #f4efe6;
     color: black;
     border: 1px, solid, #DDD7CC;
-    border-radius: 4px;
+    border-radius: 8px;
     text-align: center;
     cursor:pointer;
 }
