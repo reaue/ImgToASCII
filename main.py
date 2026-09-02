@@ -6,8 +6,8 @@
 from PIL import Image
 
 
-SIZE = 40
-RATIO = 0.43 # ration between width and height of a Char
+SIZE = 7
+RATIO = 0.42 # ration between width and height of a Char
 ASCII_CHAR = [" ", ".", ":", "-", "=", "+", "*", "#", "%", "@"]
 result_list = []
 
