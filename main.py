@@ -1,7 +1,7 @@
 # This program must transform images to ASCII with brightness and colour.
 # The brightness can be represented by the following characters " .:-=+*#%@" in ASCII
 # The brightness can be calculate as B = 0.2126 * R + 0.7152 * G + 0.0722 * B
-# The finale goal is to add also transformation for videos becaus it's just a sequence of images. 
+# The finale goal is to add also transformation for videos because it's just a sequence of images. 
 
 from PIL import Image
 
