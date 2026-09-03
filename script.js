@@ -51,7 +51,7 @@ function convertToASCII() {
             const idx = (y * cols + x) * 4; // * 4 because on pixel add four informations in pixels, R, G, B and A
             const red = pixels[idx];
             const green = pixels[idx + 1];
-            const blue = pixels.data[idx + 2]; 
+            const blue = pixels[idx + 2]; 
             
             const brightness = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
             const char = ASCII[Math.trunc(Math.min(brightness / 255 * ASCII.length, ASCII.length - 1))];
