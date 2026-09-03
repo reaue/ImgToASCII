@@ -8,6 +8,21 @@ let is_img_load = false;
 let in_color = false
 let result_list = [];
 let current_cols = 0;
+let darkmode = localStorage.getItem('darkmode');
+const themeSwitch = document.getElementById("theme-switch");
+
+const enableDarkmode = () => {
+    document.body.classList.add("darkmode");
+};
+
+const disableDarkmode = () => {
+    document.body.classList.remove("darkmode")
+};
+
+
+themeSwitch.addEventListener("click", () =>{
+    darkmode !== "active" ? enableDarkmode() : disableDarkmode();
+});
 
 
 fileInput.addEventListener("change", (event) => {
