@@ -12,13 +12,18 @@ let darkmode = localStorage.getItem('darkmode');
 const themeSwitch = document.getElementById("theme-switch");
 
 const enableDarkmode = () => {
-    document.body.classList.add("darkmode");
+    document.documentElement.classList.add("darkmode");
+    localStorage.setItem("darkmode", "active");
+    darkmode = true;
 };
 
 const disableDarkmode = () => {
-    document.body.classList.remove("darkmode")
+    document.body.classList.remove("darkmode");
+    localStorage.setItem("darkmode", "inactive");
+    darkmode = false;
 };
 
+if (darkmode) enableDarkmode()
 
 themeSwitch.addEventListener("click", () =>{
     darkmode !== "active" ? enableDarkmode() : disableDarkmode();
