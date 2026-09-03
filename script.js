@@ -22,7 +22,7 @@ document.getElementById("btn-clipboard").addEventListener("click", () => {
     if (!is_img_load) return;
 
     let text = "";
-    for (let i = 0; i < result_list.length,; i++){
+    for (let i = 0; i < result_list.length; i++){
         text += result_list[i].char
         if ((i + 1) % current_cols === 0) text += "\n";
     };
