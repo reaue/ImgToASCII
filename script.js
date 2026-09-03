@@ -11,6 +11,7 @@ let current_cols = 0;
 let darkmode = localStorage.getItem('darkmode');
 const themeSwitch = document.getElementById("theme-switch");
 
+
 const enableDarkmode = () => {
     document.documentElement.classList.add("darkmode");
     localStorage.setItem("darkmode", "active");
