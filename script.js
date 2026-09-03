@@ -68,7 +68,7 @@ function convertToASCII() {
     outputCanvas.width = DISPLAY_WIDTH;
     outputCanvas.height = displayHeight;
 
-    outputCtx.fillStyle = "black";
+    outputCtx.fillStyle = "white";
     outputCtx.fillRect(0, 0, DISPLAY_WIDTH, displayHeight);
 
     outputCtx.font = `${charHeight}px "Courier Prime", monospace`;
