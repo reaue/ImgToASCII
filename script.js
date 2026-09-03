@@ -63,7 +63,7 @@ function debounce(func, timeout=100) {
 
 
 document.getElementById("checkbox-choice").addEventListener("change", function() {
-    in_color = !this.checked;
+    in_color = this.checked;
     convertToASCII();
 });
 
