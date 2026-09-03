@@ -32,12 +32,18 @@
                 <canvas id="output-canvas">Your browser doesn't support canvas.</canvas>
 
                 <div class="slidercontainer">
-                    <input type="range" min="1" max="100" value="50" class="slider" id="Size" aria-label="Taille des blocs" />
-                    <p>Size : <span id="value">50</span></p>
+                    <input type="range" min="1" max="100" value="25" class="slider" id="Size" aria-label="Taille des blocs" />
+                    <p>Size : <span id="value">25</span></p>
                     <div class="info-container">
                         🛈
                         <span class="info-text">The size is the level of details, how much pixel for a character</span>
                     </div>
+                </div>
+                <div>
+                    <input type="checkbox" id="checkbox-choice" name="black-and-white" value="true">
+                    <label for="checkbox-choice">In black and white</label>
+                    <button id="btn-clipboard">Copy to clipboard</button>
+                    <button id="btn-save">Save the image</button>
                 </div>
             </main>
         </div>

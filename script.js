@@ -6,6 +6,8 @@ let outputCtx = outputCanvas.getContext("2d");
 let img = new Image();
 let is_img_load = false;
 let in_color = true
+let result_list = [];
+let current_cols = 0;
 
 
 fileInput.addEventListener("change", (event) => {
@@ -14,6 +16,29 @@ fileInput.addEventListener("change", (event) => {
         img.src = URL.createObjectURL(fileList[0]);
     };
 }); 
+
+
+document.getElementById("btn-clipboard").addEventListener("click", () => {
+    if (!is_img_load) return;
+
+    let text = "";
+    for (let i = 0; i < result_list.length,; i++){
+        text += result_list[i].char
+        if ((i + 1) % current_cols === 0) text += "\n";
+    };
+    navigator.clipboard.writeText(text);
+});
+
+
+document.getElementById("btn-save").addEventListener("click", () => {
+    if (!is_img_load) return;
+
+    const link = document.createElement("a");
+    link.download = "ascii.png";
+    link.href = outputCanvas.toDataURL("image/png");
+    link.click();
+});
+
 
 const slider = document.getElementById("Size");
 const output = document.getElementById("value");
@@ -46,7 +71,8 @@ function convertToASCII() {
     const imgData = samplingCtx.getImageData(0, 0, cols, rows);
     const pixels = imgData.data;
     
-    const result_list = [];
+    result_list = [];
+    current_cols = cols;
     for (let y = 0; y < rows; y++) {
         for (let x = 0; x < cols; x++) {
             const idx = (y * cols + x) * 4; // * 4 because on pixel add four informations in pixels, R, G, B and A
