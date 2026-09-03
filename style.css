@@ -4,6 +4,13 @@
     --font-color: #1a1a1a;
 }
 
+.darkmode{
+    --base-color: #0a0a0a;
+    --border-color: #161616;
+    --font-color: #00ff88;
+
+}
+
 * {
     box-sizing: border-box;
 }
