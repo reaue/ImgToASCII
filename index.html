@@ -3,7 +3,7 @@
 <html lang="en-US">
     <head>
         <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width" /> <!-- This ensure that the page render with the correct width of the browser viewport -->
+        <meta name="viewport" content="width=device-width, initial-scale=1" /> <!-- This ensure that the page render with the correct width of the browser viewport -->
         <link href="style.css" rel="stylesheet" />
         <script defer src="script.js"></script>
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,12 +12,29 @@
         <title>ImgToASCII</title>
     </head>
     <body>
-        <input type="file" id="input-file" accept="image/*, video/*" style="display: none;"/>
-        <button id="trigger-btn">Choose file</button>
-        <div class="slidercontainer">
-            <input type="range" min="1" max="100" value="50" class="slider" id="Size">
-            <p>Size : <span id="value"></span></p>
+        <div>
+            <header class="title">
+                <h1>█▓▒░  ASCII.convert</h1>
+            </header>
+
+            <main>
+                <label for="input-file" class="drop-zone">
+                    <pre aria-hidden="true">@%#*+=-:.,@%
+%#*+=-:.;@%#
+#*+=-:.~@%#*
+*+=-:.?@%#*+</pre>
+                    <h2>CLICK TO LOAD IMAGE</h2> <!-- OR VIDEO when it's develop -->
+                    <p>JPG · PNG · MORE</p> <!-- GIF · MP4 when it's develop -->
+                </label>
+                <input type="file" id="input-file" accept="image/*, video/*" style="display: none;" />
+                
+                <div class="slidercontainer">
+                    <input type="range" min="1" max="100" value="50" class="slider" id="Size" aria-label="Taille des blocs" />
+                    <p>Size : <span id="value">50</span></p>
+                </div>
+                
+                <canvas id="output-canvas">Your browser doesn't support canvas.</canvas>
+            </main>
         </div>
-        <canvas id="output-canvas"></canvas>
     </body>
 </html>
