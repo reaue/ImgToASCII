@@ -30,20 +30,21 @@
                 
                 <canvas id="sampling-canvas" style="display: none"></canvas>
                 <canvas id="output-canvas">Your browser doesn't support canvas.</canvas>
+                <div class="control-panel">
+                    <div class="slider-row">
+                        <input type="range" min="1" max="50" value="20" class="slider" id="Size" aria-label="Density" />
+                        <span class="density">DENSITY&nbsp; <span id="value">20</span>
+                    </div>
 
-                <div class="slider-row">
-                    <input type="range" min="1" max="50" value="20" class="slider" id="Size" aria-label="Density" />
-                    <span class="density">DENSITY&nbsp; <span id="value">20</span>
-                </div>
-
-                <div class="control-row">
-                    <label class="color-control">
-                        <input type="checkbox" id="checkbox-choice" name="color" value="false">
-                        <span>COLOR</span>
-                    </label>
-                    <div class="control-actions">
-                        <button id="btn-clipboard" class="txt-button">COPY</button>
-                        <button id="btn-save" class="download-button">DOWNLOAD PNG</button>
+                    <div class="control-row">
+                        <label class="color-control">
+                            <input type="checkbox" id="checkbox-choice" name="color" value="false">
+                            <span>COLOR</span>
+                        </label>
+                        <div class="control-actions">
+                            <button id="btn-clipboard" class="txt-button">COPY</button>
+                            <button id="btn-save" class="download-button">DOWNLOAD PNG</button>
+                        </div>
                     </div>
                 </div>
             </main>
