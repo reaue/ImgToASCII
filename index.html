@@ -28,6 +28,9 @@
                 </label>
                 <input type="file" id="input-file" accept="image/*, video/*" style="display: none;" />
                 
+                <canvas id="sampling-canvas" style="display: none"></canvas>
+                <canvas id="output-canvas">Your browser doesn't support canvas.</canvas>
+                
                 <div class="slidercontainer">
                     <input type="range" min="1" max="100" value="50" class="slider" id="Size" aria-label="Taille des blocs" />
                     <p>Size : <span id="value">50</span></p>
@@ -36,8 +39,6 @@
                         <span class="info-text">The size is the level of details, how much pixel for a character</span>
                     </div>
                 </div>
-                <canvas id="sampling-canvas" style="display: none"></canvas>
-                <canvas id="output-canvas">Your browser doesn't support canvas.</canvas>
             </main>
         </div>
     </body>
