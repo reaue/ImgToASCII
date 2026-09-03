@@ -31,21 +31,20 @@
                 <canvas id="sampling-canvas" style="display: none"></canvas>
                 <canvas id="output-canvas">Your browser doesn't support canvas.</canvas>
 
-                <div class="slidercontainer">
-                    <input type="range" min="1" max="50" value="20" class="slider" id="Size" aria-label="Taille des blocs" />
-                    <p>Size : <span id="value">20</span></p>
-                    <div class="info-container">
-                        🛈
-                        <span class="info-text">The size is the level of details, how much pixel for a character</span>
-                    </div>
+                <div class="slider-row">
+                    <input type="range" min="1" max="50" value="20" class="slider" id="Size" aria-label="Density" />
+                    <span class="density">DENSITY&nbsp; <span id="value">20</span>
                 </div>
-                <div class="controls">
-                    <div>
+
+                <div class="control-row">
+                    <label class="color-control">
                         <input type="checkbox" id="checkbox-choice" name="black-and-white" value="true">
-                        <label for="checkbox-choice">In black and white</label>
+                        <span>COLOR</span>
+                    </label>
+                    <div class="control-actions">
+                        <button id="btn-clipboard" class="txt-button">COPY</button>
+                        <button id="btn-save" class="download-button">DOWNLOAD PNG</button>
                     </div>
-                    <button id="btn-clipboard">Copy to clipboard</button>
-                    <button id="btn-save">Save the image</button>
                 </div>
             </main>
         </div>

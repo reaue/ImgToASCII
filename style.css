@@ -4,57 +4,26 @@ html {
     font-family: "Courier Prime", monospace;
 }
 
-button {
-    background-color: #f4efe6;
-    color: #1a1a1a;
-    border: 1px solid #DDD7CC;
-    border-radius: 8px;
-    text-align: center;
-    cursor:pointer;
-}
-
 body {
     background-color: #f4efe6;
-    border: 2px solid #DDD7CC;
     width: auto;
-    margin: auto auto;
-    padding: 20px 20px 20px 20px;
+    margin: auto;
+    padding: 20px;
 }
 
-.slidercontainer {
-    width: 100%;
-    max-width: 400px;
-    margin: 20px auto;
-    text-align: center;
-}
-
-.slider {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 100%;
-    height: 6px;
-    border-radius: 5px;
-    background: #DDD7CC;
-    outline: none;
-}
-
-.slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: #1a1a1a;
+button {
+    font-family: "Courier Prime", monospace;
     cursor: pointer;
 }
 
-.slider::-moz-range-thumb {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: #1a1a1a;
-    cursor: pointer;
-    border: none;
+canvas {
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    width: 800px;
+    max-width: 100%;
 }
 
 .drop-zone {
@@ -67,7 +36,7 @@ body {
     aspect-ratio: 1 / 1;
     margin: 40px auto;
     background-color: #f4efe6;
-    border: 2px dashed #DDD7CC;
+    border: 2px dashed #ddd7cc;
     border-radius: 8px;
     cursor: pointer;
     text-align: center;
@@ -80,7 +49,7 @@ body {
 
 .drop-zone.compact {
     aspect-ratio: auto;
-    max-width:  100%;
+    max-width: 100%;
     padding: 10px 20px;
 }
 
@@ -126,23 +95,154 @@ body {
     opacity: 1;
 }
 
-canvas {
-    padding-left: 0;
-    padding-right: 0;
-    margin-left: auto;
-    margin-right: auto;
-    display: block;
-    width: 800px;
+.control-panel {
+    width: 100%;
+    margin-top: 30px;
+    padding-top: 10px;
+    border-top: 1px solid #ddd7cc;
+    font-family: "Courier Prime", monospace;
 }
 
-.controls {
+.slider-row {
     display: flex;
-    align-items: flex-end;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+}
+
+.slider {
+    -webkit-appearance: none;
+    appearance: none;
+    flex: 1;
+    width: 100%;
+    height: 1px;
+    background: #ddd7cc;
+    outline: none;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 3px;
+    height: 20px;
+    border-radius: 0;
+    background: #1a1a1a;
+    cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+    width: 3px;
+    height: 20px;
+    border-radius: 0;
+    background: #1a1a1a;
+    cursor: pointer;
+    border: none;
+}
+
+.density {
+    min-width: 90px;
+    color: #1a1a1a;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-align: right;
+    white-space: nowrap;
+}
+
+#value {
+    color: #1a1a1a;
+    letter-spacing: 1px;
+}
+
+.control-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 24px;
+}
+
+.color-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #1a1a1a;
+}
+
+.color-control input {
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border: 1px solid #1a1a1a;
+    margin: 0;
+    cursor: pointer;
+    position: relative;
+}
+
+.color-control input:checked {
+    background: #1a1a1a;
+}
+
+.color-control input:checked::after {
+    content: "✓";
+    position: absolute;
+    color: #f4efe6;
+    font-size: 10px;
+    left: 2px;
+    top: -1px;
+}
+
+.control-actions {
+    display: flex;
     gap: 12px;
 }
 
-.checkbox-group {
-    display: flex;
-    align-items: center;
-    gap: 6px;
+.control-actions button {
+    height: 32px;
+    padding: 0 14px;
+    border-radius: 0;
+    font-size: 10px;
+    letter-spacing: 2px;
+}
+
+.txt-button {
+    background-color: #f4efe6;
+    color: #aaa398;
+    border: 1px solid #ddd7cc;
+}
+
+.txt-button:hover {
+    color: #1a1a1a;
+    border-color: #1a1a1a;
+}
+
+.download-button {
+    background-color: #1a1a1a;
+    color: #f4efe6;
+    border: 1px solid #1a1a1a;
+}
+
+.download-button:hover {
+    background-color: #333333;
+}
+
+@media (max-width: 600px) {
+    .control-row {
+        align-items: flex-start;
+        gap: 20px;
+        flex-direction: column;
+    }
+
+    .control-actions {
+        width: 100%;
+    }
+
+    .control-actions button {
+        flex: 1;
+    }
+
+    .density {
+        min-width: auto;
+    }
 }
