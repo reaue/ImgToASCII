@@ -62,7 +62,7 @@ function debounce(func, timeout=100) {
 };
 
 
-document.getElementById("checkbox-choice").addEventListener("change", () => {
+document.getElementById("checkbox-choice").addEventListener("change", function() {
     in_color = !this.checked;
     convertToASCII();
 });
@@ -133,7 +133,7 @@ function convertToASCII() {
             };
             outputCtx.fillText(char, x * charWidth, y * charHeight);
         } else {
-            output.fillStyle = "white";
+            outputCtx.fillStyle = "white";
             outputCtx.fillText(char, x * charWidth, y * charHeight);
         };
     };
