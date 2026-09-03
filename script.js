@@ -19,7 +19,7 @@ const enableDarkmode = () => {
 };
 
 const disableDarkmode = () => {
-    document.body.classList.remove("darkmode");
+    document.documentElement.classList.remove("darkmode");
     localStorage.setItem("darkmode", "inactive");
     darkmode = false;
 };
@@ -27,7 +27,7 @@ const disableDarkmode = () => {
 if (darkmode) enableDarkmode()
 
 themeSwitch.addEventListener("click", () =>{
-    darkmode !== "active" ? enableDarkmode() : disableDarkmode();
+    darkmode ? disableDarkmode() : enableDarkmode();
 });
 
 
