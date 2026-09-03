@@ -1,6 +1,6 @@
 # Image to ASCII art.
 
-A web-based tool that convert images into ASCII art directly in your browser.
+A web-based tool that converts images into ASCII art directly in your browser.
 
 ![alt text](result.png)
 
