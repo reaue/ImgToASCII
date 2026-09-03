@@ -56,3 +56,44 @@ body {
     cursor: pointer;
     border: none;
 }
+
+.drop-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 500px;
+    aspect-ratio: 1 / 1;
+    margin: 40px auto;
+    background-color: #f4efe6;
+    border: 2px dashed #DDD7CC;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.drop-zone:hover {
+    border-color: #1a1a1a;
+}
+
+.drop-zone.compact {
+    aspect-ratio: auto;
+    max-width:  100%;
+    padding: 10px 20px;
+}
+
+.drop-zone.compact pre {
+    display: none;
+}
+
+.drop-zone.compact h2 {
+    font-size: 1rem;
+    margin: 4px 0;
+}
+
+.drop-zone.compact p {
+    font-size: 0.8rem;
+    margin: 0;
+}
