@@ -18,7 +18,7 @@
     padding: 0;
     border-radius: 10%;
     background-color: var(--border-color);
-    border-color: var(--border-mod-color);
+    border: 2px dashed var(--border-mod-color);
     display: flex;
     justify-content: center;
     align-items: center;
