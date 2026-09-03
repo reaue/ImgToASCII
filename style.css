@@ -17,15 +17,19 @@
     width: 50px;
     padding: 0;
     border-radius: 10%;
-    background-color: var(--border-color);
-    border: 2px dashed var(--border-mod-color);
+    background-color: var(--base-color);
+    border: 2px dashed var(--border-color);
+    transition: all 0.2s ease;
     display: flex;
     justify-content: center;
     align-items: center;
     position: fixed;
     top: 20px;
     right: 20px;
+}
 
+#theme-switch:hover{
+    border-color: var(--font-color);
 }
 
 #theme-switch svg{
