@@ -50,7 +50,9 @@ canvas {
 .drop-zone.compact {
     aspect-ratio: auto;
     max-width: 100%;
-    padding: 10px 20px 20px;
+    padding: 10px 20px;
+    margin-left: 20px;
+    margin-right: 20px;
 }
 
 .drop-zone.compact pre {
