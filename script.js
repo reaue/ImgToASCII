@@ -60,7 +60,10 @@ function convertToASCII() {
 };
 
 
+const dropZone = document.getElementById("drop-zone");
+
 img.onload = function () {
     is_img_load = true;
+    dropZone.classList.add("compact");
     convertToASCII();
 };
