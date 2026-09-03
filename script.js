@@ -118,7 +118,7 @@ function convertToASCII() {
     outputCtx.textBaseline = "top";
 
     if (!in_color) {
-        outputCtx.fillStyle = rgb(31, 31, 31);
+        outputCtx.fillStyle = `rgb(${31}, ${31}, ${31})`;
         outputCtx.fillRect(0, 0, DISPLAY_WIDTH, displayHeight);
     };
 
