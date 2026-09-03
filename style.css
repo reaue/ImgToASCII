@@ -1,29 +1,29 @@
+* {
+    box-sizing: border-box;
+}
+
 html {
     background-color: #f4efe6;
     font-size: 16px;
     font-family: "Courier Prime", monospace;
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 body {
     background-color: #f4efe6;
-    width: auto;
+    width: 100%;
+    max-width: 100%;
     margin: auto;
     padding: 20px;
-}
-
-button {
-    font-family: "Courier Prime", monospace;
-    cursor: pointer;
+    overflow-x: hidden;
 }
 
 canvas {
-    padding-left: 0;
-    padding-right: 0;
-    margin-left: auto;
-    margin-right: auto;
     display: block;
-    width: 800px;
-    max-width: 100%;
+    width: min(800px, 100%);
+    height: auto;
+    margin: 0 auto;
 }
 
 .drop-zone {
@@ -43,16 +43,27 @@ canvas {
     transition: all 0.2s ease;
 }
 
-.drop-zone:hover {
-    border-color: #1a1a1a;
-}
-
 .drop-zone.compact {
     aspect-ratio: auto;
     max-width: 100%;
     padding: 10px 20px;
-    margin-left: 20px;
-    margin-right: 20px;
+}
+
+.control-panel {
+    width: 100%;
+    margin-top: 50px;
+    padding: 20px 30px 30px;
+    border-top: 1px solid #ddd7cc;
+    font-family: "Courier Prime", monospace;
+}
+
+button {
+    font-family: "Courier Prime", monospace;
+    cursor: pointer;
+}
+
+.drop-zone:hover {
+    border-color: #1a1a1a;
 }
 
 .drop-zone.compact pre {
@@ -95,15 +106,6 @@ canvas {
 .info-container:hover .info-text {
     visibility: visible;
     opacity: 1;
-}
-
-.control-panel {
-    width: 100%;
-    margin-top: 50px;
-    padding: 20px 30px 30px;
-    border-top: 1px solid #ddd7cc;
-    box-sizing: border-box;
-    font-family: "Courier Prime", monospace;
 }
 
 .slider-row {
