@@ -40,6 +40,10 @@ canvas {
     margin: 0 auto;
 }
 
+.title{
+    color: var(--title-color);
+}
+
 .drop-zone {
     display: flex;
     flex-direction: column;
@@ -51,6 +55,7 @@ canvas {
     margin: 40px auto;
     background-color: var(--base-color);
     border: 2px dashed var(--border-color);
+    color: var(--title-color);
     border-radius: 8px;
     cursor: pointer;
     text-align: center;
@@ -168,7 +173,7 @@ button {
 }
 
 #value {
-    color: var(--border-color);
+    color: var(--font-color);
     letter-spacing: 1px;
 }
 
