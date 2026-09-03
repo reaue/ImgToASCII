@@ -104,7 +104,7 @@ button {
     visibility: hidden;
     width: 160px;
     background-color: var(--base-color);
-    color: var(--border-color);
+    color: var(--font-color);
     text-align: center;
     border-radius: 6px;
     padding: 5px;
@@ -168,7 +168,7 @@ button {
 }
 
 #value {
-    color: var(--font-color);
+    color: var(--border-color);
     letter-spacing: 1px;
 }
 
