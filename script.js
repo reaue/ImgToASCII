@@ -68,14 +68,14 @@ function convertToASCII() {
     outputCanvas.width = DISPLAY_WIDTH;
     outputCanvas.height = displayHeight;
 
-    outputCtx.fillSyle = "black";
+    outputCtx.fillStyle = "black";
     outputCtx.fillRect(0, 0, DISPLAY_WIDTH, displayHeight);
 
     outputCtx.font = `${charHeight}px "Courier Prime", monospace`;
     outputCtx.textBaseline = "top";
 
     for (const {char, red, green, blue, x, y} of result_list) {
-        outputCtx.fillSyle = `rgb(${red}, ${green}, ${blue})`;
+        outputCtx.fillStyle = `rgb(${red}, ${green}, ${blue})`;
         outputCtx.fillText(char, x * charWidth, y * charHeight);
     };
 };
