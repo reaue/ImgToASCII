@@ -3,11 +3,7 @@ let canvas = document.getElementById("output-canvas");
 let ctx = canvas.getContext("2d");
 let img = new Image();
 let is_img_load = false;
-const triggerBtn = document.getElementById("trigger-btn");
 
-triggerBtn.addEventListener("click", () => {
-    fileInput.click();
-});
 
 fileInput.addEventListener("change", (event) => {
     const fileList = event.target.files;
