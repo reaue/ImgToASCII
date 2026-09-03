@@ -22,7 +22,7 @@ canvas {
     margin-left: auto;
     margin-right: auto;
     display: block;
-    width: 850px;
+    width: 800px;
     max-width: 100%;
 }
 
@@ -109,6 +109,7 @@ canvas {
     align-items: center;
     gap: 20px;
     width: 100%;
+    margin-top: 20 px;
 }
 
 .slider {
