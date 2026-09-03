@@ -5,6 +5,7 @@ let outputCanvas = document.getElementById("output-canvas");
 let outputCtx = outputCanvas.getContext("2d");
 let img = new Image();
 let is_img_load = false;
+let in_color = true
 
 
 fileInput.addEventListener("change", (event) => {
@@ -56,7 +57,7 @@ function convertToASCII() {
             const brightness = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
             const char = ASCII[Math.trunc(Math.min(brightness / 255 * ASCII.length, ASCII.length - 1))];
             
-            result_list.push({char, red, green, blue, x, y});
+            result_list.push({char, red, green, blue, x, y, brightness});
         };
         
     };
@@ -68,15 +69,35 @@ function convertToASCII() {
     outputCanvas.width = DISPLAY_WIDTH;
     outputCanvas.height = displayHeight;
 
+    outputCtx.font = `${charHeight}px "Courier Prime", monospace`;
+    outputCtx.textBaseline = "top";
+
+    if (in_color) {
+        
+    }
     outputCtx.fillStyle = "white";
     outputCtx.fillRect(0, 0, DISPLAY_WIDTH, displayHeight);
 
     outputCtx.font = `${charHeight}px "Courier Prime", monospace`;
     outputCtx.textBaseline = "top";
 
-    for (const {char, red, green, blue, x, y} of result_list) {
-        outputCtx.fillStyle = `rgb(${red}, ${green}, ${blue})`;
-        outputCtx.fillText(char, x * charWidth, y * charHeight);
+    for (const {char, red, green, blue, x, y, brightness} of result_list) {
+        if (in_color) {
+            outputCtx.fillStyle = `rgb(${red}, ${green}, ${blue})`;
+            outputCtx.fillRect(x * charWidth, y * charHeight, charWidth, charHeight);
+            if (brightness < 128) {
+                outputCtx.fillStyle = "white";
+            } else {
+                outputCtx.fillStyle = "black";
+            };
+            outputCtx.fillText(char, x * charWidth, y * charHeight);
+        } else {
+            outputCtx.fillStyle = "black";
+            outputCtx.fillRect(0, 0, DISPLAY_WIDTH, displayHeight);
+
+            output.fillStyle = "white";
+            outputCtx.fillText(char, x * charWidth, y * charHeight);
+        };
     };
 };
 
