@@ -1,6 +1,6 @@
 # Image to ASCII art.
 
-A website that takes images or videos and transforms them into ASCII images or videos.
+A website that takes images and transforms them into ASCII images.
 
 ---
 
