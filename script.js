@@ -45,12 +45,11 @@ const output = document.getElementById("value");
 const dropZone = document.getElementById("drop-zone");
 
 output.innerHTML = slider.value;
+const debounceConvert = debounce(convertToASCII, 100)
 
 slider.addEventListener("input", function() {
     output.innerHTML = this.value;
-    if (this.value < 15) { 
-    debounce(convertToASCII(), 100);
-    } else convertToASCII();
+    debounceConvert();
 });
 
 
@@ -61,6 +60,12 @@ function debounce(func, timeout=100) {
         timer = setTimeout(() => { func.apply(this, args); }, timeout);
     };
 };
+
+
+document.getElementById("checkbox-choice").addEventListener("change", () => {
+    in_color = !this.checked;
+    convertToASCII();
+});
 
 
 const ASCII = [" ", ".", ":", "-", "=", "+", "*", "#", "%", "@"];
@@ -109,14 +114,13 @@ function convertToASCII() {
     outputCtx.font = `${charHeight}px "Courier Prime", monospace`;
     outputCtx.textBaseline = "top";
 
-    if (in_color) {
-        
-    }
-    outputCtx.fillStyle = "white";
-    outputCtx.fillRect(0, 0, DISPLAY_WIDTH, displayHeight);
-
     outputCtx.font = `${charHeight}px "Courier Prime", monospace`;
     outputCtx.textBaseline = "top";
+
+    if (!in_color) {
+        outputCtx.fillStyle = "black";
+        outputCtx.fillRect(0, 0, DISPLAY_WIDTH, displayHeight);
+    };
 
     for (const {char, red, green, blue, x, y, brightness} of result_list) {
         if (in_color) {
@@ -129,9 +133,6 @@ function convertToASCII() {
             };
             outputCtx.fillText(char, x * charWidth, y * charHeight);
         } else {
-            outputCtx.fillStyle = "black";
-            outputCtx.fillRect(0, 0, DISPLAY_WIDTH, displayHeight);
-
             output.fillStyle = "white";
             outputCtx.fillText(char, x * charWidth, y * charHeight);
         };

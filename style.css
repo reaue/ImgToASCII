@@ -134,3 +134,15 @@ canvas {
     display: block;
     width: 800px;
 }
+
+.controls {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
