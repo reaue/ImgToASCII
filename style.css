@@ -97,8 +97,8 @@ canvas {
 
 .control-panel {
     width: 100%;
-    margin-top: 30px;
-    padding: 20px 30px 30px;
+    margin-top: 50px;
+    padding: 20px 60px 60px;
     border-top: 1px solid #ddd7cc;
     box-sizing: border-box;
     font-family: "Courier Prime", monospace;
