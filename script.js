@@ -8,7 +8,7 @@ let is_img_load = false;
 let in_color = false
 let result_list = [];
 let current_cols = 0;
-let darkmode = localStorage.getItem('darkmode');
+let darkmode = localStorage.getItem('darkmode') === "active";
 const themeSwitch = document.getElementById("theme-switch");
 
 
