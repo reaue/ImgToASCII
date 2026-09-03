@@ -2,12 +2,14 @@
     --base-color: #f4efe6;
     --border-color: #ddd7cc;
     --font-color: #1a1a1a;
+    --border-mod-color: #1a1a1a;
 }
 
 .darkmode{
     --base-color: #0a0a0a;
     --border-color: #1d1d1d;
     --font-color: #00ff88;
+    --border-mod-color: #1a1a1a;
 }
 
 #theme-switch{
@@ -16,6 +18,7 @@
     padding: 0;
     border-radius: 50%;
     background-color: var(--border-color);
+    border-color: var(--border-mod-color);
     display: flex;
     justify-content: center;
     align-items: center;
