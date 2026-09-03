@@ -48,8 +48,19 @@ output.innerHTML = slider.value;
 
 slider.addEventListener("input", function() {
     output.innerHTML = this.value;
-    convertToASCII();
+    if (this.value < 15) { 
+    debounce(convertToASCII(), 100);
+    } else convertToASCII();
 });
+
+
+function debounce(func, timeout=100) {
+    let timer;
+    return (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => { func.apply(this, args); }, timeout);
+    };
+};
 
 
 const ASCII = [" ", ".", ":", "-", "=", "+", "*", "#", "%", "@"];
