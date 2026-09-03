@@ -5,7 +5,7 @@ let outputCanvas = document.getElementById("output-canvas");
 let outputCtx = outputCanvas.getContext("2d");
 let img = new Image();
 let is_img_load = false;
-let in_color = true
+let in_color = false
 let result_list = [];
 let current_cols = 0;
 
