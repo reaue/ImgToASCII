@@ -1,4 +1,4 @@
-const KEY = import.meta.env.VITE_API_KEY
+const KEY = "__GOOGLE_API_KEY__";
 const CX_ID = "02c1c63584ca141ef"
 
 let fileInput = document.getElementById("input-file");
