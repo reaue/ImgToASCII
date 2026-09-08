@@ -26,7 +26,19 @@ jobs:
         env:
           API_KEY: ${{ secrets.GOOGLE_API_KEY }}
         run: |
+          if [ -z "$API_KEY" ]; then
+            echo "ERROR: GOOGLE_API_KEY secret is empty or unavailable."
+            exit 1
+          fi
+
           sed -i "s|__GOOGLE_API_KEY__|$API_KEY|g" script.js
+
+          if grep -q "__GOOGLE_API_KEY__" script.js; then
+            echo "ERROR: API key placeholder was not replaced."
+            exit 1
+          fi
+
+          echo "API key successfully injected."
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
