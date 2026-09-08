@@ -34,13 +34,19 @@ themeSwitch.addEventListener("click", () =>{
     darkmode ? disableDarkmode() : enableDarkmode();
 });
 
+function loadImage(file) {
+    if (!file || !file.type.startsWith("image/")) return;
+
+    img.src = URL.createObjectURL(file);
+}
 
 fileInput.addEventListener("change", (event) => {
     const fileList = event.target.files;
+
     if (fileList.length > 0) {
-        img.src = URL.createObjectURL(fileList[0]);
-    };
-}); 
+        loadImage(fileList[0]);
+    }
+});
 
 
 document.getElementById("btn-clipboard").addEventListener("click", () => {
@@ -68,6 +74,33 @@ document.getElementById("btn-save").addEventListener("click", () => {
 const slider = document.getElementById("Size");
 const output = document.getElementById("value");
 const dropZone = document.getElementById("drop-zone");
+
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    document.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+    });
+});
+
+['dragenter', 'dragover'].forEach(eventName => {
+    document.addEventListener(eventName, () => {
+        document.body.classList.add('dragover');
+    });
+});
+
+['dragleave', 'drop'].forEach(eventName => {
+    document.addEventListener(eventName, () => {
+        document.body.classList.remove('dragover');
+    });
+});
+
+document.addEventListener('drop', (e) => {
+    const files = e.dataTransfer.files;
+
+    if (files.length > 0) {
+        loadImage(files[0]);
+    }
+});
 
 output.innerHTML = slider.value;
 const debounceConvert = debounce(convertToASCII, 100)
