@@ -3,7 +3,7 @@ name: Deploy ImgToASCII
 on:
   push:
     branches:
-      - main
+      - master
 
 permissions:
   contents: read
