@@ -253,6 +253,9 @@ inputDescription.addEventListener("keydown", async function (event) {
     const url = `https://www.googleapis.com/customsearch/v1?key=${KEY}&cx=${CX_ID}&q=${encodeURIComponent(querry)}&searchType=image`;
     async function getFirstImage () {
         try {
+            console.log("KEY:", KEY);
+            console.log("CX:", CX_ID);
+            console.log("URL:", url);
             const response = await fetch(url)
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}`);
@@ -263,7 +266,7 @@ inputDescription.addEventListener("keydown", async function (event) {
             if (data.items && data.items.length > 0) {
                 const firstImage = data.items[0];
                 
-                img.src = firstImage.image.link;
+                img.src = firstImage.link;
             } else {
                 inputDescription.value = "";
                 inputDescription.placeholder = "None image found..."
