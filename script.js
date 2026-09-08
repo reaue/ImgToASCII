@@ -5,7 +5,8 @@ let outputCanvas = document.getElementById("output-canvas");
 let outputCtx = outputCanvas.getContext("2d");
 let img = new Image();
 let is_img_load = false;
-let in_color = false
+let in_color = false;
+let invert = false;
 let result_list = [];
 let current_cols = 0;
 let darkmode = localStorage.getItem('darkmode') === "active";
@@ -85,6 +86,11 @@ function debounce(func, timeout=100) {
 
 document.getElementById("checkbox-choice").addEventListener("change", function() {
     in_color = this.checked;
+    convertToASCII();
+});
+
+document.getElementById("checkbox-invert").addEventListener("change", function() {
+    invert = this.checked;
     convertToASCII();
 });
 
