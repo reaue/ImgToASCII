@@ -24,7 +24,7 @@ The algorithm was first developed in python as a proof of concept, you can find 
 
 The main idea is that this following string : `.:-=+*#%@"` contains all level of brightness and moreover you can easily find brightness from RGB values with this formula : `0.2126 * red + 0.7152 * green + 0.0722 * blue`, because human eye has a different sensitivity to red, green and blue.
 
-# Next mprovement
+# Next possible improvement
 
 - [ ] adding a notification while the image is processing because the algorithm can take some time
 - [ ] add an real drag and drop zone
