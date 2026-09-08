@@ -256,9 +256,11 @@ inputDescription.addEventListener("keydown", async function (event) {
             console.log("KEY:", KEY);
             console.log("CX:", CX_ID);
             console.log("URL:", url);
+            console.log("STATUS:", response.status);
+            console.log("GOOGLE:", data);
             const response = await fetch(url)
             if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
+                throw new Error(data.error?.message || `HTTP ${response.status}`);
             }
 
             const data = await response.json();
