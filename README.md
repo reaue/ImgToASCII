@@ -30,3 +30,23 @@ The main idea is that this following string : `.:-=+*#%@"` contains all level of
 
 I added some features requested by raters. Firstly, an invert button which switch color and so brightness. After that, a drag and drop zone located on the all window. Then I added a progress notification, such as you can see when you computer calculate for the render. And finally the hardest part, the algorithm optimization. For example instead of reading pixel multiple time for once calculate the brightness, then render the pixel, ... Now I do all of that in same time. I also sucess to optimize more the black and white render. Now I render characters only at the end of the line, instead of drawing them each by each. Unfortunately, it's not possible for the color mode.
 
+# How to run it locally
+
+Clone the repository:
+
+```bash
+git clone https://github.com/reaue/ImgToASCII.git 
+cd ImgToASCII
+```
+Intsall Pillow:
+```bash
+pip install Pillow
+```
+(Tkinter is usually included with pyhton)
+Run the python prototype
+```bash
+cd poc
+python main.py
+```
+
+I added terminal commands to choose between different options for this python program (but it has only basic feature, convert image to ASCII only in black and white).
