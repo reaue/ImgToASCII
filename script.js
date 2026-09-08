@@ -1,3 +1,6 @@
+const KEY = import.meta.env.VITE_API_KEY
+const CX_ID = "02c1c63584ca141ef"
+
 let fileInput = document.getElementById("input-file");
 let samplingCanvas = document.getElementById("sampling-canvas");
 let samplingCtx = samplingCanvas.getContext("2d");
@@ -10,12 +13,13 @@ outputCanvas.width = 1;
 outputCanvas.height = 1;
 let in_color = false;
 let invert = false;
-let result_list = [];
+let result_text = "";
 let current_cols = 0;
 let darkmode = localStorage.getItem('darkmode') === "active";
 const themeSwitch = document.getElementById("theme-switch");
 const processing = document.getElementById("processing");
 const progress = document.getElementById("progress");
+const inputDescription = document.getElementById("input-description");
 let conversionId = 0;
 
 
@@ -52,15 +56,10 @@ fileInput.addEventListener("change", (event) => {
 });
 
 
-document.getElementById("btn-clipboard").addEventListener("click", () => {
-    if (!is_img_load) return;
+document.getElementById("btn-clipboard").addEventListener("click", async () => {
+    if (!is_img_load || !result_text) return;
 
-    let text = "";
-    for (let i = 0; i < result_list.length; i++){
-        text += result_list[i].char
-        if ((i + 1) % current_cols === 0) text += "\n";
-    };
-    navigator.clipboard.writeText(text);
+    await navigator.clipboard.writeText(result_text);
 });
 
 
@@ -172,6 +171,7 @@ function convertToASCII() {
     outputCtx.fillStyle = invert ? "black" : "white";
 
     let y = 0;
+    let text = "";
     conversionId++;
     const currentConversion = conversionId;
 
@@ -182,51 +182,44 @@ function convertToASCII() {
         }
     
         while ( y < rows && performance.now() - startTime < 16) {
-                let line = "";
-
-                for (let x = 0; x < cols; x++) {
-
-                    const idx = (y * cols + x) * 4;
-
-                    let red = pixels[idx];
-                    let green = pixels[idx + 1];
-                    let blue = pixels[idx + 2];
-
-                    if (invert) {
-                        red = 255 - red;
-                        blue = 255 - blue;
-                        green = 255 - green;
-                    }
-
-                    const brightness = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
-                    const charIndex = Math.min((brightness * ASCII.length / 256) | 0, ASCII.length - 1);
-                    const char = ASCII[charIndex];
-
-                    if (in_color) {
-                        const posX = x * charWidth;
-                        const posY = y * charHeight;
-
-                        outputCtx.fillStyle = `rgb(${red}, ${green}, ${blue})`;
-
-                        outputCtx.fillRect(posX, posY, charWidth, charHeight);
-                        outputCtx.fillStyle = brightness < 128 ? "white" : "black";
-
-                        outputCtx.fillText(char, posX, posY);
-                    } else {
-                        line += char;
-                    }
+            let line = "";
+            for (let x = 0; x < cols; x++) {
+                const idx = (y * cols + x) * 4;
+                let red = pixels[idx];
+                let green = pixels[idx + 1];
+                let blue = pixels[idx + 2];
+                if (invert) {
+                    red = 255 - red;
+                    blue = 255 - blue;
+                    green = 255 - green;
                 }
-                if (!in_color) {
-                    outputCtx.fillText(line, 0, y * charHeight);
+                const brightness = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+                const charIndex = Math.min((brightness * ASCII.length / 256) | 0, ASCII.length - 1);
+                const char = ASCII[charIndex];
+                if (in_color) {
+                    const posX = x * charWidth;
+                    const posY = y * charHeight;
+                    outputCtx.fillStyle = `rgb(${red}, ${green}, ${blue})`;
+                    outputCtx.fillRect(posX, posY, charWidth, charHeight);
+                    outputCtx.fillStyle = brightness < 128 ? "white" : "black";
+                    outputCtx.fillText(char, posX, posY);
+                } else {
+                    line += char;
                 }
-                y++;
-                const percent = (y / rows) * 100;
-                progress.style.width = `${percent}%`;
+            }
+            if (!in_color) {
+                outputCtx.fillText(line, 0, y * charHeight);
+                text += line + "\n"
+            }
+            y++;
+            const percent = (y / rows) * 100;
+            progress.style.width = `${percent}%`;
             }
             if (y < rows) {
                 requestAnimationFrame(processRows);
             } else {
                 progress.style.width = "100%";
+                result_text = text;
                 setTimeout(() => {
                     processing.classList.remove("active");
                 }, 200);
@@ -238,6 +231,48 @@ function convertToASCII() {
 img.onload = function () {
     is_img_load = true;
     dropZone.classList.add("compact");
+    inputDescription.classList.add("compact")
     outputCanvas.classList.remove("empty");
     convertToASCII();
 };
+
+
+inputDescription.addEventListener("input", () => {
+    inputDescription.style.height = "auto";
+    inputDescription.style.height = inputDescription.scrollHeight + "px";
+});
+
+inputDescription.addEventListener("keydown", async function (event) {
+    if (event.key !== "Enter" || event.shiftKey) return;
+    
+    event.preventDefault();
+    const querry = inputDescription.value.trim();
+
+    if (!querry) return;
+
+    const url = `https://www.googleapis.com/customsearch/v1?key=${KEY}&cx=${CX_ID}&q=${encodeURIComponent(querry)}&searchType=image`;
+    async function getFirstImage () {
+        try {
+            const response = await fetch(url)
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (data.items && data.items.length > 0) {
+                const firstImage = data.items[0];
+                
+                img.src = firstImage.image.link;
+            } else {
+                inputDescription.value = "";
+                inputDescription.placeholder = "None image found..."
+            };
+        } catch (error) {
+            console.error(error);
+            inputDescription.value = "";
+            inputDescription.placeholder = "Having some trouble with the API..."
+        };
+    };
+    getFirstImage();
+});

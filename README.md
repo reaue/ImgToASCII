@@ -50,3 +50,9 @@ python main.py
 ```
 
 I added terminal commands to choose between different options for this python program (but it has only basic feature, convert image to ASCII only in black and white).
+
+# Possible features incoming
+
+- [ ] A describe to ASCII converter based on Google API search
+- [ ] Adding video (it will cost a lot of calculation time)
+- [x] Fixing the copy feature
