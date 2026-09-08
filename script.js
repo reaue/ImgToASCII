@@ -251,28 +251,29 @@ inputDescription.addEventListener("keydown", async function (event) {
     if (!querry) return;
 
     const url = `https://www.googleapis.com/customsearch/v1?key=${KEY}&cx=${CX_ID}&q=${encodeURIComponent(querry)}&searchType=image`;
-        async function getFirstImage () {
-            try {
-                const response = await fetch(url)
-                if (!response.ok) {
-                    throw new Error(data.error?.message || `HTTP ${response.status}`);
-                }
 
-                const data = await response.json();
+    async function getFirstImage() {
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
 
-                if (data.items && data.items.length > 0) {
-                    const firstImage = data.items[0];
-                    
-                    img.src = firstImage.link;
-                } else {
+            if (!response.ok) {
+                throw new Error(data.error?.message || `HTTP ${response.status}`);
+            };
+            if (data.items && data.items.length > 0) {
+                const firstImage = data.items[0];
+
+                img.src = firstImage.link;
+            } else {
                 inputDescription.value = "";
-                inputDescription.placeholder = "None image found..."
+                inputDescription.placeholder = "No image found...";
             };
         } catch (error) {
             console.error(error);
+
             inputDescription.value = "";
-            inputDescription.placeholder = "Having some trouble with the API..."
+            inputDescription.placeholder = "Having some trouble with the API...";
         };
-    };
+    }; 
     getFirstImage();
 });
