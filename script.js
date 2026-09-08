@@ -14,6 +14,9 @@ let result_list = [];
 let current_cols = 0;
 let darkmode = localStorage.getItem('darkmode') === "active";
 const themeSwitch = document.getElementById("theme-switch");
+const processing = document.getElementById("processing");
+const progress = document.getElementById("progress");
+let conversionId = 0;
 
 
 const enableDarkmode = () => {
@@ -103,7 +106,7 @@ document.addEventListener('drop', (e) => {
 });
 
 output.innerHTML = slider.value;
-const debounceConvert = debounce(convertToASCII, 100)
+const debounceConvert = debounce(convertToASCII, 50)
 
 slider.addEventListener("input", function() {
     output.innerHTML = this.value;
@@ -147,32 +150,8 @@ function convertToASCII() {
     samplingCanvas.height = rows;
     samplingCtx.drawImage(img, 0, 0, cols, rows);
 
-    const imgData = samplingCtx.getImageData(0, 0, cols, rows);
-    const pixels = imgData.data;
-    
-    result_list = [];
-    current_cols = cols;
-    for (let y = 0; y < rows; y++) {
-        for (let x = 0; x < cols; x++) {
-            const idx = (y * cols + x) * 4; // * 4 because on pixel add four informations in pixels, R, G, B and A
-            let red = pixels[idx];
-            let green = pixels[idx + 1];
-            let blue = pixels[idx + 2]; 
-            
-            if (invert) {
-                red = 255 - red;
-                green = 255 - green;
-                blue = 255 - blue;
-            }
+    const pixels = samplingCtx.getImageData(0, 0, cols, rows).data;
 
-            const brightness = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
-            const char = ASCII[Math.trunc(Math.min(brightness / 255 * ASCII.length, ASCII.length - 1))];
-            
-            result_list.push({char, red, green, blue, x, y, brightness});
-        };
-        
-    };
-    
     const charWidth = DISPLAY_WIDTH / cols;
     const charHeight = charWidth /RATIO;
     const displayHeight = charHeight * rows;
@@ -182,37 +161,79 @@ function convertToASCII() {
 
     outputCtx.font = `${charHeight}px "Courier Prime", monospace`;
     outputCtx.textBaseline = "top";
+    
+    current_cols = cols;
 
-    if (!in_color) {
-        if (!invert) {
-            outputCtx.fillStyle = `rgb(${31}, ${31}, ${31})`;
-        } else {
-            outputCtx.fillStyle = `rgb(${240}, ${240}, ${240})`
+    processing.classList.add("active");
+    progress.style.width = "0%";
+
+    outputCtx.fillStyle = invert ? "rgb(240, 240, 240)" : "rgb(31, 31, 31)";
+    outputCtx.fillRect(0, 0, DISPLAY_WIDTH, displayHeight);
+    outputCtx.fillStyle = invert ? "black" : "white";
+
+    let y = 0;
+    conversionId++;
+    const currentConversion = conversionId;
+
+    function processRows () {
+        const startTime = performance.now();
+        if (currentConversion !== conversionId) {
+            return;
         }
-        outputCtx.fillRect(0, 0, DISPLAY_WIDTH, displayHeight);
-    };
+    
+        while ( y < rows && performance.now() - startTime < 16) {
+                let line = "";
 
-    for (const {char, red, green, blue, x, y, brightness} of result_list) {
-        if (in_color) {
-            outputCtx.fillStyle = `rgb(${red}, ${green}, ${blue})`;
-            outputCtx.fillRect(x * charWidth, y * charHeight, charWidth, charHeight);
-            if (brightness < 128) {
-                outputCtx.fillStyle = "white";
-            } else {
-                outputCtx.fillStyle = "black";
-            };
-            outputCtx.fillText(char, x * charWidth, y * charHeight);
-        } else {
-            if (!invert) {
-                outputCtx.fillStyle = "white";
-            } else {
-                outputCtx.fillStyle = "black";
+                for (let x = 0; x < cols; x++) {
+
+                    const idx = (y * cols + x) * 4;
+
+                    let red = pixels[idx];
+                    let green = pixels[idx + 1];
+                    let blue = pixels[idx + 2];
+
+                    if (invert) {
+                        red = 255 - red;
+                        blue = 255 - blue;
+                        green = 255 - green;
+                    }
+
+                    const brightness = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+                    const charIndex = Math.min((brightness * ASCII.length / 256) | 0, ASCII.length - 1);
+                    const char = ASCII[charIndex];
+
+                    if (in_color) {
+                        const posX = x * charWidth;
+                        const posY = y * charHeight;
+
+                        outputCtx.fillStyle = `rgb(${red}, ${green}, ${blue})`;
+
+                        outputCtx.fillRect(posX, posY, charWidth, charHeight);
+                        outputCtx.fillStyle = brightness < 128 ? "white" : "black";
+
+                        outputCtx.fillText(char, posX, posY);
+                    } else {
+                        line += char;
+                    }
+                }
+                if (!in_color) {
+                    outputCtx.fillText(line, 0, y * charHeight);
+                }
+                y++;
+                const percent = (y / rows) * 100;
+                progress.style.width = `${percent}%`;
             }
-            outputCtx.fillText(char, x * charWidth, y * charHeight);
+            if (y < rows) {
+                requestAnimationFrame(processRows);
+            } else {
+                progress.style.width = "100%";
+                setTimeout(() => {
+                    processing.classList.remove("active");
+                }, 200);
+            };
         };
-    };
+    requestAnimationFrame(processRows);
 };
-
 
 img.onload = function () {
     is_img_load = true;
