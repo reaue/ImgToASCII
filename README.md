@@ -27,6 +27,6 @@ The main idea is that this following string : `.:-=+*#%@"` contains all level of
 # Next possible improvement
 
 - [ ] adding a notification while the image is processing because the algorithm can take some time
-- [ ] add an real drag and drop zone
+- [x] add an real drag and drop zone
 - [ ] add optimisation (I'm not really sure I can do better)
 - [x] add an invert option
