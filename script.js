@@ -251,25 +251,20 @@ inputDescription.addEventListener("keydown", async function (event) {
     if (!querry) return;
 
     const url = `https://www.googleapis.com/customsearch/v1?key=${KEY}&cx=${CX_ID}&q=${encodeURIComponent(querry)}&searchType=image`;
-    async function getFirstImage () {
-        try {
-            console.log("KEY:", KEY);
-            console.log("CX:", CX_ID);
-            console.log("URL:", url);
-            console.log("STATUS:", response.status);
-            console.log("GOOGLE:", data);
-            const response = await fetch(url)
-            if (!response.ok) {
-                throw new Error(data.error?.message || `HTTP ${response.status}`);
-            }
+        async function getFirstImage () {
+            try {
+                const response = await fetch(url)
+                if (!response.ok) {
+                    throw new Error(data.error?.message || `HTTP ${response.status}`);
+                }
 
-            const data = await response.json();
+                const data = await response.json();
 
-            if (data.items && data.items.length > 0) {
-                const firstImage = data.items[0];
-                
-                img.src = firstImage.link;
-            } else {
+                if (data.items && data.items.length > 0) {
+                    const firstImage = data.items[0];
+                    
+                    img.src = firstImage.link;
+                } else {
                 inputDescription.value = "";
                 inputDescription.placeholder = "None image found..."
             };
