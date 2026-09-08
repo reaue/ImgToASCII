@@ -10,6 +10,7 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
         <title>ImgToASCII</title>
+        <link rel="icon" type="image/svg" href="images/icon.svg">
     </head>
     <body>
         <div>
@@ -41,18 +42,21 @@
                     </div>
 
                     <div class="control-row">
+                        <div class="control-settings">
                         <label class="color-control">
                             <input type="checkbox" id="checkbox-choice" name="color" value="false">
                             <span>COLOR</span>
                         </label>
+                    
                         <label class="invert-control">
                             <input type="checkbox" id="checkbox-invert-choice" name="invert" value="false">
                             <span>INVERT</span>
                         </label>
-                        <div class="control-actions">
-                            <button id="btn-clipboard" class="txt-button">COPY</button>
-                            <button id="btn-save" class="download-button">DOWNLOAD PNG</button>
-                        </div>
+                    </div>
+                
+                    <div class="control-actions">
+                        <button id="btn-clipboard" class="txt-button">COPY</button>
+                        <button id="btn-save" class="download-button">DOWNLOAD PNG</button>
                     </div>
                 </div>
             </main>

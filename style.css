@@ -69,11 +69,16 @@ body {
     overflow-x: hidden;
 }
 
-canvas {
+#output-canvas {
     display: block;
     width: min(800px, 100%);
     height: auto;
     margin: 0 auto;
+}
+
+#output-canvas.empty {
+    width: 0;
+    height: 0;
 }
 
 .title{
@@ -215,12 +220,18 @@ button {
 
 .control-row {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
     margin-top: 24px;
 }
 
-.color-control {
+.control-settings {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.color-control, .invert-control {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -230,21 +241,31 @@ button {
     color: var(--font-color);
 }
 
-.color-control input {
+.control-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.color-control input, .invert-control input {
     appearance: none;
+    -webkit-appearance: none;
+
     width: 14px;
     height: 14px;
+
     border: 1px solid var(--font-color);
+    background: var(--base-color);
+
     margin: 0;
     cursor: pointer;
     position: relative;
 }
 
-.color-control input:checked {
+.invert-control input:checked, .color-control input:checked {
     background: var(--font-color);
 }
 
-.color-control input:checked::after {
+.color-control input:checked::after, .invert-control input:checked::after {
     content: "✓";
     position: absolute;
     color: var(--base-color);

@@ -2,9 +2,12 @@ let fileInput = document.getElementById("input-file");
 let samplingCanvas = document.getElementById("sampling-canvas");
 let samplingCtx = samplingCanvas.getContext("2d");
 let outputCanvas = document.getElementById("output-canvas");
+outputCanvas.classList.add("empty");
 let outputCtx = outputCanvas.getContext("2d");
 let img = new Image();
 let is_img_load = false;
+outputCanvas.width = 1;
+outputCanvas.height = 1;
 let in_color = false;
 let invert = false;
 let result_list = [];
@@ -89,7 +92,7 @@ document.getElementById("checkbox-choice").addEventListener("change", function()
     convertToASCII();
 });
 
-document.getElementById("checkbox-invert").addEventListener("change", function() {
+document.getElementById("checkbox-invert-choice").addEventListener("change", function() {
     invert = this.checked;
     convertToASCII();
 });
@@ -119,10 +122,16 @@ function convertToASCII() {
     for (let y = 0; y < rows; y++) {
         for (let x = 0; x < cols; x++) {
             const idx = (y * cols + x) * 4; // * 4 because on pixel add four informations in pixels, R, G, B and A
-            const red = pixels[idx];
-            const green = pixels[idx + 1];
-            const blue = pixels[idx + 2]; 
+            let red = pixels[idx];
+            let green = pixels[idx + 1];
+            let blue = pixels[idx + 2]; 
             
+            if (invert) {
+                red = 255 - red;
+                green = 255 - green;
+                blue = 255 - blue;
+            }
+
             const brightness = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
             const char = ASCII[Math.trunc(Math.min(brightness / 255 * ASCII.length, ASCII.length - 1))];
             
@@ -141,11 +150,12 @@ function convertToASCII() {
     outputCtx.font = `${charHeight}px "Courier Prime", monospace`;
     outputCtx.textBaseline = "top";
 
-    outputCtx.font = `${charHeight}px "Courier Prime", monospace`;
-    outputCtx.textBaseline = "top";
-
     if (!in_color) {
-        outputCtx.fillStyle = `rgb(${31}, ${31}, ${31})`;
+        if (!invert) {
+            outputCtx.fillStyle = `rgb(${31}, ${31}, ${31})`;
+        } else {
+            outputCtx.fillStyle = `rgb(${240}, ${240}, ${240})`
+        }
         outputCtx.fillRect(0, 0, DISPLAY_WIDTH, displayHeight);
     };
 
@@ -160,7 +170,11 @@ function convertToASCII() {
             };
             outputCtx.fillText(char, x * charWidth, y * charHeight);
         } else {
-            outputCtx.fillStyle = "white";
+            if (!invert) {
+                outputCtx.fillStyle = "white";
+            } else {
+                outputCtx.fillStyle = "black";
+            }
             outputCtx.fillText(char, x * charWidth, y * charHeight);
         };
     };
@@ -170,5 +184,6 @@ function convertToASCII() {
 img.onload = function () {
     is_img_load = true;
     dropZone.classList.add("compact");
+    outputCanvas.classList.remove("empty");
     convertToASCII();
 };

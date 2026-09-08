@@ -29,4 +29,4 @@ The main idea is that this following string : `.:-=+*#%@"` contains all level of
 - [ ] adding a notification while the image is processing because the algorithm can take some time
 - [ ] add an real drag and drop zone
 - [ ] add optimisation (I'm not really sure I can do better)
-- [ ] add an invert option
+- [x] add an invert option
