@@ -29,3 +29,4 @@ The main idea is that this following string : `.:-=+*#%@"` contains all level of
 # New features added for the V.2
 
 I added some features requested by raters. Firstly, an invert button which switch color and so brightness. After that, a drag and drop zone located on the all window. Then I added a progress notification, such as you can see when you computer calculate for the render. And finally the hardest part, the algorithm optimization. For example instead of reading pixel multiple time for once calculate the brightness, then render the pixel, ... Now I do all of that in same time. I also sucess to optimize more the black and white render. Now I render characters only at the end of the line, instead of drawing them each by each. Unfortunately, it's not possible for the color mode.
+
