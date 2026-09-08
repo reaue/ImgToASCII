@@ -6,15 +6,17 @@ A web-based tool that converts images into ASCII art directly in your browser.
 
 ## Try it
 
-Want to try it yourself ? 
-[**DEMO**](https://reaue.github.io/ImgToASCII/)
+Want to try it yourself ?  [**DEMO**](https://reaue.github.io/ImgToASCII/)
 
 ## Features
 
 - Convert images into ASCII art.
 - Adjustable ASCII resolution.
+- All the window is a drag and drop zone. 
 - Choose between full-color or black and white rendering.
-- copy directly to cliboard or export as a png image with in one click.
+- Choose if you want to see your image in invert mod or not.
+- Copy directly to cliboard or export as a png image with in one click.
+- See a real time loading bar when your pc calculate for the render.
 
 ## Proof of concept
 
@@ -22,4 +24,8 @@ The algorithm was first developed in python as a proof of concept, you can find 
 
 ## How it works
 
-The main idea is that this following string : `.:-=+*#%@"` contains all level of brightness and moreover you can easily find brightness from RGB values with this formula : `0.2126 * red + 0.7152 * green + 0.0722 * blue`, because human eye has a different sensitivity to red, green and blue.
+The main idea is that this following string : `.:-=+*#%@"` contains all level of brightness and moreover you can easily find brightness from RGB values with this formula : `0.2126 * red + 0.7152 * green + 0.0722 * blue`, coefficients are different because human eye has a different sensitivity to red, green and blue.
+
+# New features added for the V.2
+
+I added some features requested by raters. Firstly, an invert button which switch color and so brightness. After that, a drag and drop zone located on the all window. Then I added a progress notification, such as you can see when you computer calculate for the render. And finally the hardest part, the algorithm optimization. For example instead of reading pixel multiple time for once calculate the brightness, then render the pixel, ... Now I do all of that in same time. I also sucess to optimize more the black and white render. Now I render characters only at the end of the line, instead of drawing them each by each. Unfortunately, it's not possible for the color mode.
