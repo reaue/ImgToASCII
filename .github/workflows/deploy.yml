@@ -39,6 +39,19 @@ jobs:
           fi
 
           echo "API key successfully injected."
+        
+      - name: Check injected key
+        run: |
+          echo "Checking script.js..."
+
+          if grep -q "__GOOGLE_API_KEY__" script.js; then
+            echo "ERROR: Placeholder still present!"
+            exit 1
+          fi
+
+          echo "Placeholder successfully removed."
+
+          grep "const KEY" script.js | sed 's/=.*/= [HIDDEN];/'
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
