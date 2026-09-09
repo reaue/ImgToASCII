@@ -1,0 +1,87 @@
+<!doctype html>
+
+<html lang="en-US">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" /> <!-- This ensure that the page render with the correct width of the browser viewport -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+        <title>ImgToASCII</title>
+        <link rel="icon" type="image/svg" href="/ImgToASCII/assets/icon-CilHhr-M.svg">
+      <script type="module" crossorigin src="/ImgToASCII/assets/index-BMBNjv6r.js"></script>
+      <link rel="stylesheet" crossorigin href="/ImgToASCII/assets/index-CivP1Dt6.css">
+    </head>
+    <body>
+        <div>
+            <header class="title">
+                <h1>█▓▒░  ASCII.convert</h1>
+                <button id="theme-switch">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Z"/></svg> <!-- dark icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M338.5-338.5Q280-397 280-480t58.5-141.5Q397-680 480-680t141.5 58.5Q680-563 680-480t-58.5 141.5Q563-280 480-280t-141.5-58.5ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Z"/></svg> <!-- light icon -->
+                </button>
+            </header>
+
+            <main>
+                <div id="top">
+                    <div id="top-no-video">
+                        <label for="input-description"></label>
+                        <textarea id="input-description" spellcheck="false" name="input-description" placeholder="Describe what you want to see in ASCII art..."></textarea>
+                    </div>
+                    <div id="top-video" class="slider-row" style="display: none;">
+                        <input type="range" min="1" max="24" value="15" class="slider" id="FPS-slider" aria-label="FPS" />
+                        <span class="fps">FPS&nbsp; <span id="fps-value">15</span>
+                        <button id="btn-ASCII" class="download-button">CONVERT TO ASCII</button>
+                    </div>
+                </div>
+
+                <label for="input-file" class="drop-zone" id="drop-zone">
+                    <pre aria-hidden="true">@%#*+=-:.,@%
+%#*+=-:.;@%#
+#*+=-:.~@%#*
+*+=-:.?@%#*+</pre>
+                    <h2>CLICK TO LOAD IMAGE OR VIDEO</h2>
+                    <p>JPG · PNG · MP4 · MORE</p>
+                </label>
+                <input type="file" id="input-file" accept="image/*, video/*" style="display: none;" />
+                
+                <canvas id="sampling-canvas" style="display: none"></canvas>
+                <canvas id="output-canvas">Your browser doesn't support canvas.</canvas>
+
+                <video id="output-video" style="display: none;" autoplay muted loop playsinline>Your browser does not support video render.</video>
+
+                <div class="control-panel">
+                    <div class="slider-row">
+                        <input type="range" min="1" max="50" value="20" class="slider" id="Size" aria-label="Density" />
+                        <span class="density">DENSITY&nbsp; <span id="value">20</span>
+                    </div>
+
+                    <div id="processing">
+                        <div id="processing-texte">Generating ASCII...</div>
+                        <div class="progress-bar">
+                            <div id="progress"></div>
+                        </div>
+                    </div>
+
+                    <div class="control-row">
+                        <div class="control-settings">
+                        <label class="color-control">
+                            <input type="checkbox" id="checkbox-choice" name="color" value="false">
+                            <span>COLOR</span>
+                        </label>
+                    
+                        <label class="invert-control">
+                            <input type="checkbox" id="checkbox-invert-choice" name="invert" value="false">
+                            <span>INVERT</span>
+                        </label>
+                    </div>
+                
+                    <div class="control-actions">
+                        <button id="btn-clipboard" class="txt-button">COPY</button>
+                        <button id="btn-save" class="download-button">DOWNLOAD PNG</button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </body>
+</html>
