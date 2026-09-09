@@ -53,6 +53,6 @@ I added terminal commands to choose between different options for this python pr
 
 # Possible features incoming
 
-- [ ] A describe to ASCII converter based on Google API search
+- [x] A describe to ASCII converter based on Google API search
 - [ ] Adding video (it will cost a lot of calculation time)
 - [x] Fixing the copy feature

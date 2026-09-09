@@ -167,6 +167,7 @@ function convertToASCII() {
     current_cols = cols;
 
     processing.classList.add("active");
+    processing.classList.remove("searching");
     progress.style.width = "0%";
     processingText.textContent = "Generating ASCII...";
 
@@ -235,11 +236,27 @@ function convertToASCII() {
 img.onload = function () {
     is_img_load = true;
 
+    processing.classList.remove("searching");
+    processingText.textContent = "Generating ASCII...";
+    progress.style.width = "0%";
+
     dropZone.classList.add("compact");
     inputDescription.classList.add("compact");
     outputCanvas.classList.remove("empty");
 
     convertToASCII();
+};
+
+img.onerror = function () {
+    is_img_load = false;
+
+    processing.classList.remove("searching");
+    processingText.textContent = "No image found";
+    progress.style.width = "0%";
+
+    setTimeout(() => {
+        processing.classList.remove("active");
+    }, 3000);
 };
 
 
@@ -258,7 +275,7 @@ async function getFirstImage(query) {
     const pages = data.query?.pages;
 
     if (!pages) {
-        throw new Error("No image found");
+        return null;
     }
 
     for (const page of Object.values(pages)) {
@@ -271,7 +288,7 @@ async function getFirstImage(query) {
         }
     }
 
-    throw new Error("No valid image found");
+    return null;
 }
 
 
@@ -282,11 +299,13 @@ async function searchAndConvert(query) {
 
     const id = ++searchId;
 
-    processingText.textContent = "Searching image...";
     inputDescription.classList.add("loading");
 
     processing.classList.add("active");
     processing.classList.add("searching");
+
+    processingText.textContent = "Searching image...";
+    progress.style.width = "0%";
 
     try {
         const imageUrl = await getFirstImage(query);
@@ -294,11 +313,18 @@ async function searchAndConvert(query) {
         if (id !== searchId) return;
 
         if (!imageUrl) {
+            processing.classList.remove("searching");
+            processingText.textContent = "No image found";
+            progress.style.width = "0%";
+
+            setTimeout(() => {
+                if (id === searchId) {
+                    processing.classList.remove("active");
+                }
+            }, 3000);
+
             return;
         }
-
-        processing.classList.remove("searching");
-        progress.style.width = "100%";
 
         is_img_load = false;
         img.src = imageUrl;
@@ -306,15 +332,17 @@ async function searchAndConvert(query) {
     } catch (error) {
         if (id !== searchId) return;
 
-        processingText.textContent = "No image found";
+        console.error(error);
+
         processing.classList.remove("searching");
+        processingText.textContent = "No image found";
+        progress.style.width = "0%";
 
         setTimeout(() => {
-            processing.classList.remove("active");
-
+            if (id === searchId) {
+                processing.classList.remove("active");
+            }
         }, 3000);
-
-        inputDescription.classList.remove("loading");
 
     } finally {
         if (id === searchId) {
