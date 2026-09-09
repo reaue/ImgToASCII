@@ -1,7 +1,7 @@
+const ffmpeg = new FFmpeg();
+
 import { FFmpeg } from "@ffmpeg/ffmpeg";
 import { fetchFile } from "@ffmpeg/util";
-
-const ffmpeg = new FFmpeg();
 
 let fileInput = document.getElementById("input-file");
 let samplingCanvas = document.getElementById("sampling-canvas");
@@ -43,8 +43,9 @@ const topVideo = document.getElementById("top-video")
 let file;
 const videoButton = document.getElementById("btn-ASCII")
 const btnSave = document.getElementById("btn-save")
-let videoBlobUrl = null;
 const outputVideo = document.getElementById("output-video")
+let gifVideoUrl = null;
+let videoBlobUrl = null;
 
 
 function updateSaveButtonLabel() {
@@ -124,6 +125,14 @@ const output = document.getElementById("value");
 const outputFPS = document.getElementById("fps-value");
 const dropZone = document.getElementById("drop-zone");
 
+fileInput.addEventListener("change", () => {
+    file = fileInput.files[0];
+
+    if (file) {
+        load(file);
+    }
+});
+
 ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
     document.addEventListener(eventName, (e) => {
         e.preventDefault();
@@ -154,41 +163,99 @@ async function convertGif(file) {
         await ffmpeg.load();
     }
 
+    try {
+        await ffmpeg.deleteFile("input.gif");
+    } catch {}
+
+    try {
+        await ffmpeg.deleteFile("output.mp4");
+    } catch {}
+
     await ffmpeg.writeFile("input.gif", await fetchFile(file));
 
     await ffmpeg.exec([
+        "-y",
         "-i", "input.gif",
+        "-vf", "scale=trunc(iw/2)*2:trunc(ih/2)*2",
+        "-c:v", "libx264",
+        "-pix_fmt", "yuv420p",
+        "-movflags", "+faststart",
         "output.mp4"
     ]);
 
     const data = await ffmpeg.readFile("output.mp4");
 
-    return new Blob([data.buffer], {
+    console.log("MP4 size:", data.length);
+    console.log("MP4 first bytes:", data.slice(0, 16));
+
+    if (data.length === 0) {
+        throw new Error("FFmpeg generated an empty MP4");
+    }
+
+    console.log(
+        "MP4 format:",
+        new TextDecoder().decode(data.slice(4, 8))
+    );
+
+    return new Blob([data], {
         type: "video/mp4"
     });
 }
 
+let loadId = 0;
+
 async function load(file) {
     if (!file) return;
 
+    const id = ++loadId;
+    is_media_load = false;
+
     if (file.type === "image/gif") {
-        convertGif(file);
+        is_video = true;
+
+        try {
+            const videoBlob = await convertGif(file);
+
+            if (id !== loadId) return;
+
+            if (gifVideoUrl) {
+                URL.revokeObjectURL(gifVideoUrl);
+            }
+
+            gifVideoUrl = URL.createObjectURL(videoBlob);
+
+            video.src = gifVideoUrl;
+            video.load();
+        } catch (error) {
+            console.error("GIF conversion failed:", error);
+        }
+
+        return;
     }
 
-    is_media_load = false;
+    if (id !== loadId) return;
 
     if (file.type.startsWith("video/")) {
         is_video = true;
+
+        if (gifVideoUrl) {
+            URL.revokeObjectURL(gifVideoUrl);
+            gifVideoUrl = null;
+        }
+
         video.src = URL.createObjectURL(file);
         video.load();
-    } else {
-        is_video = false;
-        video.pause();
-        video.removeAttribute("src");
-        video.load();
 
-        img.src = URL.createObjectURL(file);
+        return;
     }
+
+    is_video = false;
+
+    video.pause();
+    video.removeAttribute("src");
+    video.load();
+
+    img.src = URL.createObjectURL(file);
 }
 
 output.innerHTML = slider.value;
@@ -367,12 +434,7 @@ async function convertToASCII(source, silent = false) {
 
 async function previewVideoFrame() {
     if (!is_media_load || !video.videoWidth || !video.videoHeight) return;
-
-    await new Promise((resolve) => {
-        video.onseeked = resolve;
-        video.currentTime = 0;
-    });
-
+    await seekTo(video, 0);
     await convertToASCII(video, true);
 }
 
@@ -387,11 +449,6 @@ video.onloadedmetadata = async function () {
 
     is_media_load = true;
 
-    if (videoBlobUrl) {
-        URL.revokeObjectURL(videoBlobUrl);
-        videoBlobUrl = null;
-    }
-
     processing.classList.remove("searching");
     processingText.textContent = "Generating ASCII from video can take time...";
     progress.style.width = "0%";
@@ -400,7 +457,7 @@ video.onloadedmetadata = async function () {
     inputDescription.classList.add("compact");
     outputCanvas.classList.remove("empty");   
     
-    is_video = true
+    is_video = true;
 
     updateSaveButtonLabel();
 
@@ -412,6 +469,44 @@ videoButton.addEventListener("click", () => {
     videoToASCII();
 });
 
+
+function seekTo(video, time, timeoutMs = 1000) {
+    return new Promise((resolve) => {
+        let settled = false;
+
+        const finish = () => {
+            if (settled) return;
+
+            settled = true;
+            video.removeEventListener("seeked", onSeeked);
+            clearTimeout(timeout);
+
+            if (video.requestVideoFrameCallback) {
+                video.requestVideoFrameCallback(() => resolve());
+            } else {
+                requestAnimationFrame(() => requestAnimationFrame(resolve));
+            }
+        };
+
+        const onSeeked = () => {
+            finish();
+        };
+
+        const timeout = setTimeout(() => {
+            finish();
+        }, timeoutMs);
+
+        if (Math.abs(video.currentTime - time) < 1 / 120) {
+            finish();
+            return;
+        }
+
+        video.addEventListener("seeked", onSeeked);
+        video.currentTime = time;
+    });
+}
+
+
 img.onload = function () {
     outputVideo.style.display = "none";
     outputCanvas.style.display = "block";
@@ -421,6 +516,15 @@ img.onload = function () {
 
     is_media_load = true;
     is_video = false;
+
+    if (gifVideoUrl) {
+        URL.revokeObjectURL(gifVideoUrl);
+        gifVideoUrl = null;
+    }
+
+    video.pause();
+    video.removeAttribute("src");
+    video.load();
 
     processing.classList.remove("searching");
     processingText.textContent = "Generating ASCII...";
@@ -578,10 +682,7 @@ async function videoToASCII () {
     const frames = [];
 
     for (let i = 0; i < totalFrames; i++) {
-        await new Promise((resolve) => {
-            video.onseeked = resolve;
-            video.currentTime = i / fps;
-        });
+        await seekTo(video, i / fps);
         await convertToASCII(video, true);
         frames.push(await createImageBitmap(outputCanvas));
 
