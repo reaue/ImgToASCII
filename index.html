@@ -5,16 +5,6 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" /> <!-- This ensure that the page render with the correct width of the browser viewport -->
         <link href="style.css" rel="stylesheet" />
-        <script src=" https://cdn.jsdelivr.net/npm/gif2vid@0.0.6/lib/browser/gif2vid.standalone.min.js "></script>
-        <script>
-        async function convertGif(file) {
-            const arrayBuffer = await file.arrayBuffer();
-            const mp4Buffer = await window.gif2vid.convertGifBuffer(arrayBuffer);
-            return new Blob([mp4Buffer], {
-                type: "video/mp4"
-            });
-        }
-        </script>
         <script type="module" src="script.js"></script>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

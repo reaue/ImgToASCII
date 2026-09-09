@@ -1,3 +1,8 @@
+import { FFmpeg } from "@ffmpeg/ffmpeg";
+import { fetchFile } from "@ffmpeg/util";
+
+const ffmpeg = new FFmpeg();
+
 let fileInput = document.getElementById("input-file");
 let samplingCanvas = document.getElementById("sampling-canvas");
 let samplingCtx = samplingCanvas.getContext("2d", {
@@ -144,19 +149,38 @@ document.addEventListener('drop', (e) => {
     load(file);
 });
 
+
+async function convertGif(file) {
+    if (!ffmpeg.loaded) {
+        await ffmpeg.load();
+    }
+
+    await ffmpeg.writeFile("input.gif", await fetchFile(file));
+
+    await ffmpeg.exec([
+        "-i", "input.gif",
+        "output.mp4"
+    ]);
+
+    const data = await ffmpeg.readFile("output.mp4");
+
+    return new Blob([data.buffer], {
+        type: "video/mp4"
+    });
+}
+
 async function load(file) {
     if (!file) return;
+
+    if (file.type === "image/gif") {
+        convertGif(file);
+    }
 
     is_media_load = false;
 
     if (file.type.startsWith("video/")) {
         is_video = true;
         video.src = URL.createObjectURL(file);
-        video.load();
-    } else if (file.type === "image/gif") {
-        is_video = true;
-        const videoBlob = await convertGif(file);
-        video.src = URL.createObjectURL(videoBlob);
         video.load();
     } else {
         is_video = false;
