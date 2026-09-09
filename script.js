@@ -5,6 +5,7 @@ let outputCanvas = document.getElementById("output-canvas");
 outputCanvas.classList.add("empty");
 let outputCtx = outputCanvas.getContext("2d");
 let img = new Image();
+img.crossOrigin = "anonymous";
 let is_img_load = false;
 outputCanvas.width = 1;
 outputCanvas.height = 1;
