@@ -80,15 +80,14 @@ const disableDarkmode = () => {
     darkmode = false;
 };
 
-if (darkmode) enableDarkmode()
+if (darkmode) {
+    enableDarkmode();
+} else {
+    disableDarkmode();
+}
 
-themeSwitch.addEventListener("click", () =>{
+themeSwitch.addEventListener("click", () => {
     darkmode ? disableDarkmode() : enableDarkmode();
-});
-
-fileInput.addEventListener("change", (event) => {
-    file = event.target.files[0];
-    load(file);
 });
 
 
