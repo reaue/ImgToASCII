@@ -1,6 +1,8 @@
 let fileInput = document.getElementById("input-file");
 let samplingCanvas = document.getElementById("sampling-canvas");
-let samplingCtx = samplingCanvas.getContext("2d");
+let samplingCtx = samplingCanvas.getContext("2d", {
+    willReadFrequently: true
+});
 let outputCanvas = document.getElementById("output-canvas");
 outputCanvas.classList.add("empty");
 let outputCtx = outputCanvas.getContext("2d");
@@ -19,6 +21,7 @@ const processing = document.getElementById("processing");
 const progress = document.getElementById("progress");
 const inputDescription = document.getElementById("input-description");
 let conversionId = 0;
+const processingText = document.getElementById("processing-texte");
 
 
 const enableDarkmode = () => {
@@ -145,7 +148,9 @@ function convertToASCII() {
 
     samplingCanvas.width = cols;
     samplingCanvas.height = rows;
+
     samplingCtx.drawImage(img, 0, 0, cols, rows);
+
 
     const pixels = samplingCtx.getImageData(0, 0, cols, rows).data;
 
@@ -163,6 +168,7 @@ function convertToASCII() {
 
     processing.classList.add("active");
     progress.style.width = "0%";
+    processingText.textContent = "Generating ASCII...";
 
     outputCtx.fillStyle = invert ? "rgb(240, 240, 240)" : "rgb(31, 31, 31)";
     outputCtx.fillRect(0, 0, DISPLAY_WIDTH, displayHeight);
@@ -228,59 +234,104 @@ function convertToASCII() {
 
 img.onload = function () {
     is_img_load = true;
+
     dropZone.classList.add("compact");
-    inputDescription.classList.add("compact")
+    inputDescription.classList.add("compact");
     outputCanvas.classList.remove("empty");
+
     convertToASCII();
 };
 
 
-inputDescription.addEventListener("input", () => {
-    inputDescription.style.height = "auto";
-    inputDescription.style.height = inputDescription.scrollHeight + "px";
-});
+let searchId = 0;
 
-inputDescription.addEventListener("keydown", async function (event) {
-    if (event.key !== "Enter" || event.shiftKey) return;
-    
-    event.preventDefault();
-    const query = inputDescription.value.trim();
+async function getFirstImage(query) {
+    const response = await fetch(
+        `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(query)}&gsrnamespace=6&gsrlimit=20&prop=imageinfo&iiprop=url%7Cmime&format=json&origin=*`
+    );
+
+    if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+    const pages = data.query?.pages;
+
+    if (!pages) {
+        throw new Error("No image found");
+    }
+
+    for (const page of Object.values(pages)) {
+        const info = page.imageinfo?.[0];
+
+        if (!info) continue;
+
+        if (info.mime?.startsWith("image/")) {
+            return info.url;
+        }
+    }
+
+    throw new Error("No valid image found");
+}
+
+
+async function searchAndConvert(query) {
+    query = query.trim();
 
     if (!query) return;
 
-    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(query)}?width=1024&height=1024`;
+    const id = ++searchId;
 
-    async function getFirstImage() {
-        try {
-            const response = await fetch(url);
-            const data = await response.json();
+    processingText.textContent = "Searching image...";
+    inputDescription.classList.add("loading");
 
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
-            };
+    processing.classList.add("active");
+    processing.classList.add("searching");
 
-            const pages = data.query?.pages;
+    try {
+        const imageUrl = await getFirstImage(query);
 
-            if (!pages) {
-                inputDescription.value = "";
-                inputDescription.placeholder = "No image found...";
-                return;
-            }
+        if (id !== searchId) return;
 
-            
-            const firstPage = Object.values(pages)[0];
-            const imageUrl = firstPage.imageinfo?.[0]?.url;
+        if (!imageUrl) {
+            return;
+        }
 
-            if (!imageUrl) {
-                throw new Error("No image URL found");
-            }
+        processing.classList.remove("searching");
+        progress.style.width = "100%";
 
-            img.src = imageUrl;
+        is_img_load = false;
+        img.src = imageUrl;
 
-        } catch (error) {
-            inputDescription.value = "";
-            inputDescription.placeholder = "Having some trouble with the API...";
-        };
-    }; 
-    getFirstImage();
+    } catch (error) {
+        if (id !== searchId) return;
+
+        processingText.textContent = "No image found";
+        processing.classList.remove("searching");
+
+        setTimeout(() => {
+            processing.classList.remove("active");
+
+        }, 3000);
+
+        inputDescription.classList.remove("loading");
+
+    } finally {
+        if (id === searchId) {
+            inputDescription.classList.remove("loading");
+        }
+    }
+}
+
+
+inputDescription.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter") return;
+
+    event.preventDefault();
+
+    const query = inputDescription.value.trim();
+
+    if (query) {
+        searchAndConvert(query);
+    }
 });

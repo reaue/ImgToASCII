@@ -414,3 +414,23 @@ textarea {
     resize: none;
     overflow: hidden;
 }
+
+#processing.searching #progress {
+    width: 30%;
+    animation: search-loading 1s ease-in-out infinite alternate;
+}
+
+#processing-texte {
+    width: 100%;
+    text-align: center;
+}
+
+@keyframes search-loading {
+    from {
+        width: 20%;
+    }
+
+    to {
+        width: 80%;
+    }
+}
