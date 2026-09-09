@@ -23,21 +23,33 @@
             </header>
 
             <main>
-                <label for="input-description"></label>
-                <textarea id="input-description" spellcheck="false" name="input-description" placeholder="Describe what you want to see in ASCII art..."></textarea>
-                
+                <div id="top">
+                    <div id="top-no-video">
+                        <label for="input-description"></label>
+                        <textarea id="input-description" spellcheck="false" name="input-description" placeholder="Describe what you want to see in ASCII art..."></textarea>
+                    </div>
+                    <div id="top-video" class="slider-row" style="display: none;">
+                        <input type="range" min="1" max="24" value="15" class="slider" id="FPS-slider" aria-label="FPS" />
+                        <span class="fps">FPS&nbsp; <span id="fps-value">15</span>
+                        <button id="btn-ASCII" class="download-button">CONVERT TO ASCII</button>
+                    </div>
+                </div>
+
                 <label for="input-file" class="drop-zone" id="drop-zone">
                     <pre aria-hidden="true">@%#*+=-:.,@%
 %#*+=-:.;@%#
 #*+=-:.~@%#*
 *+=-:.?@%#*+</pre>
-                    <h2>CLICK TO LOAD IMAGE</h2>
-                    <p>JPG · PNG · MORE</p>
+                    <h2>CLICK TO LOAD IMAGE OR VIDEO</h2>
+                    <p>JPG · PNG · MP4 · MORE</p>
                 </label>
-                <input type="file" id="input-file" accept="image/*" style="display: none;" />
+                <input type="file" id="input-file" accept="image/*, video/*" style="display: none;" />
                 
                 <canvas id="sampling-canvas" style="display: none"></canvas>
                 <canvas id="output-canvas">Your browser doesn't support canvas.</canvas>
+
+                <video id="output-video" style="display: none;" autoplay muted loop playsinline>Your browser does not support video render.</video>
+
                 <div class="control-panel">
                     <div class="slider-row">
                         <input type="range" min="1" max="50" value="20" class="slider" id="Size" aria-label="Density" />

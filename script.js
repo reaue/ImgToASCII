@@ -8,20 +8,59 @@ outputCanvas.classList.add("empty");
 let outputCtx = outputCanvas.getContext("2d");
 let img = new Image();
 img.crossOrigin = "anonymous";
-let is_img_load = false;
+let video = document.createElement("video");
+video.muted = true;
+video.playsInline = true;
+img.crossOrigin = "anonymous";
+let is_media_load = false;
 outputCanvas.width = 1;
 outputCanvas.height = 1;
 let in_color = false;
 let invert = false;
 let result_text = "";
 let current_cols = 0;
-let darkmode = localStorage.getItem('darkmode') === "active";
+let darkmode;
+if (localStorage.getItem('darkmode') === null) {
+    darkmode = true;
+} else { 
+    darkmode = localStorage.getItem('darkmode') === "active";
+}
 const themeSwitch = document.getElementById("theme-switch");
 const processing = document.getElementById("processing");
 const progress = document.getElementById("progress");
 const inputDescription = document.getElementById("input-description");
+const btnClipboard = document.getElementById("btn-clipboard")
 let conversionId = 0;
 const processingText = document.getElementById("processing-texte");
+let is_video = false
+const topNoVideo = document.getElementById("top-no-video")
+const topVideo = document.getElementById("top-video")
+let file;
+const videoButton = document.getElementById("btn-ASCII")
+const btnSave = document.getElementById("btn-save")
+let videoBlobUrl = null;
+const outputVideo = document.getElementById("output-video")
+
+
+function updateSaveButtonLabel() {
+    btnSave.textContent = is_video ? "DOWNLOAD VIDEO" : "DOWNLOAD PNG";
+}
+
+function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function pickSupportedMimeType() {
+    const candidates = [
+        "video/webm;codecs=vp9",
+        "video/webm;codecs=vp8",
+        "video/webm",
+    ];
+    for (const type of candidates) {
+        if (window.MediaRecorder && MediaRecorder.isTypeSupported(type)) return type;
+    }
+    return null;
+}
 
 
 const enableDarkmode = () => {
@@ -42,30 +81,31 @@ themeSwitch.addEventListener("click", () =>{
     darkmode ? disableDarkmode() : enableDarkmode();
 });
 
-function loadImage(file) {
-    if (!file || !file.type.startsWith("image/")) return;
-
-    img.src = URL.createObjectURL(file);
-}
-
 fileInput.addEventListener("change", (event) => {
-    const fileList = event.target.files;
-
-    if (fileList.length > 0) {
-        loadImage(fileList[0]);
-    }
+    file = event.target.files[0];
+    load(file);
 });
 
 
-document.getElementById("btn-clipboard").addEventListener("click", async () => {
-    if (!is_img_load || !result_text) return;
+btnClipboard.addEventListener("click", async () => {
+    if (!is_media_load || !result_text) return;
 
     await navigator.clipboard.writeText(result_text);
 });
 
 
-document.getElementById("btn-save").addEventListener("click", () => {
-    if (!is_img_load) return;
+btnSave.addEventListener("click", () => {
+    if (is_video) {
+        if (!videoBlobUrl) return;
+
+        const link = document.createElement("a");
+        link.download = "ascii.webm";
+        link.href = videoBlobUrl;
+        link.click();
+        return;
+    }
+
+    if (!is_media_load) return;
 
     const link = document.createElement("a");
     link.download = "ascii.png";
@@ -75,7 +115,9 @@ document.getElementById("btn-save").addEventListener("click", () => {
 
 
 const slider = document.getElementById("Size");
+const sliderFPS = document.getElementById("FPS-slider");
 const output = document.getElementById("value");
+const outputFPS = document.getElementById("fps-value");
 const dropZone = document.getElementById("drop-zone");
 
 ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
@@ -98,20 +140,40 @@ const dropZone = document.getElementById("drop-zone");
 });
 
 document.addEventListener('drop', (e) => {
-    const files = e.dataTransfer.files;
-
-    if (files.length > 0) {
-        loadImage(files[0]);
-    }
+    file = e.dataTransfer.files[0];
+    load(file);
 });
+
+function load(file) {
+    if (!file) return;
+
+    if (file.type.startsWith("video/")) {
+        video.src = URL.createObjectURL(file);
+    } else {
+        is_video = false;
+        video.src = "";
+        img.src = URL.createObjectURL(file);
+    }
+}
 
 output.innerHTML = slider.value;
 const debounceConvert = debounce(convertToASCII, 50)
 
 slider.addEventListener("input", function() {
     output.innerHTML = this.value;
-    debounceConvert();
+
+    if (video.src) {
+        debounceConvert(video);
+    } else {
+        debounceConvert(img);
+    }
 });
+
+outputFPS.innerHTML = sliderFPS.value;
+
+sliderFPS.addEventListener("input", function() {
+    outputFPS.innerHTML = this.value;
+})
 
 
 function debounce(func, timeout=100) {
@@ -125,12 +187,22 @@ function debounce(func, timeout=100) {
 
 document.getElementById("checkbox-choice").addEventListener("change", function() {
     in_color = this.checked;
-    convertToASCII();
+    
+    if (video.src) {
+        debounceConvert(video);
+    } else {
+        debounceConvert(img);
+    }
 });
 
 document.getElementById("checkbox-invert-choice").addEventListener("change", function() {
     invert = this.checked;
-    convertToASCII();
+    
+    if (video.src) {
+        debounceConvert(video);
+    } else {
+        debounceConvert(img);
+    }
 });
 
 
@@ -139,17 +211,20 @@ const RATIO = 0.55;
 const DISPLAY_WIDTH = 800;
 
 
-function convertToASCII() {
-    if (! is_img_load) return;
+async function convertToASCII(source, silent = false) {
+    if (! is_media_load) return;
 
     const size = Number(slider.value);
-    const cols = Math.trunc(img.naturalWidth / (size * RATIO));
-    const rows = Math.trunc(img.naturalHeight / size);
+    const width = source.naturalWidth || source.videoWidth;
+    const height = source.naturalHeight || source.videoHeight;
+
+    const cols = Math.trunc(width / (size * RATIO));
+    const rows = Math.trunc(height / size);
 
     samplingCanvas.width = cols;
     samplingCanvas.height = rows;
 
-    samplingCtx.drawImage(img, 0, 0, cols, rows);
+    samplingCtx.drawImage(source, 0, 0, cols, rows);
 
 
     const pixels = samplingCtx.getImageData(0, 0, cols, rows).data;
@@ -166,10 +241,12 @@ function convertToASCII() {
     
     current_cols = cols;
 
-    processing.classList.add("active");
-    processing.classList.remove("searching");
-    progress.style.width = "0%";
-    processingText.textContent = "Generating ASCII...";
+    if (!silent) {
+        processing.classList.add("active");
+        processing.classList.remove("searching");
+        progress.style.width = "0%";
+        processingText.textContent = "Generating ASCII...";
+    }
 
     outputCtx.fillStyle = invert ? "rgb(240, 240, 240)" : "rgb(31, 31, 31)";
     outputCtx.fillRect(0, 0, DISPLAY_WIDTH, displayHeight);
@@ -177,64 +254,137 @@ function convertToASCII() {
 
     let y = 0;
     let text = "";
+
     conversionId++;
     const currentConversion = conversionId;
 
-    function processRows () {
-        const startTime = performance.now();
-        if (currentConversion !== conversionId) {
-            return;
-        }
-    
-        while ( y < rows && performance.now() - startTime < 16) {
-            let line = "";
-            for (let x = 0; x < cols; x++) {
-                const idx = (y * cols + x) * 4;
-                let red = pixels[idx];
-                let green = pixels[idx + 1];
-                let blue = pixels[idx + 2];
-                if (invert) {
-                    red = 255 - red;
-                    blue = 255 - blue;
-                    green = 255 - green;
+    return new Promise((resolve) => {
+        function processRows() {
+            const startTime = performance.now();
+
+            if (currentConversion !== conversionId) {
+                resolve();
+                return;
+            }
+            while (y < rows && performance.now() - startTime < 16) {
+                let line = ""
+                for (let x = 0; x < cols; x++) {
+                    const idx = (y * cols + x) * 4;
+
+                    let red = pixels[idx];
+                    let green = pixels[idx + 1];
+                    let blue = pixels[idx + 2];
+
+                    if (invert) {
+                        red = 255 - red;
+                        green = 255 - green;
+                        blue = 255 - blue;
+                    }
+
+                    const brightness = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+                    const charIndex = Math.min((brightness * ASCII.length / 256) | 0, ASCII.length - 1);
+                    const char = ASCII[charIndex];
+
+                    if (in_color) {
+                        const posX = x * charWidth;
+                        const posY = y * charHeight;
+
+                        outputCtx.fillStyle = `rgb(${red}, ${green}, ${blue})`;
+                        outputCtx.fillRect(posX, posY, charWidth, charHeight);
+                        outputCtx.fillStyle = brightness < 128 ? "white" : "black";
+                        outputCtx.fillText(char, posX, posY);
+                        text += char;
+                    } else {
+                        line += char;
+                    }
                 }
-                const brightness = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
-                const charIndex = Math.min((brightness * ASCII.length / 256) | 0, ASCII.length - 1);
-                const char = ASCII[charIndex];
-                if (in_color) {
-                    const posX = x * charWidth;
-                    const posY = y * charHeight;
-                    outputCtx.fillStyle = `rgb(${red}, ${green}, ${blue})`;
-                    outputCtx.fillRect(posX, posY, charWidth, charHeight);
-                    outputCtx.fillStyle = brightness < 128 ? "white" : "black";
-                    outputCtx.fillText(char, posX, posY);
+                if (!in_color) {
+                    outputCtx.fillText(line, 0, y * charHeight);
+                    text += line + "\n";
                 } else {
-                    line += char;
+                    text += "\n";
                 }
-            }
-            if (!in_color) {
-                outputCtx.fillText(line, 0, y * charHeight);
-                text += line + "\n"
-            }
-            y++;
-            const percent = (y / rows) * 100;
-            progress.style.width = `${percent}%`;
+                y++;
+                if (!silent) {
+                    const percent = (y / rows) * 100;
+                    progress.style.width = `${percent}%`;
+                }
             }
             if (y < rows) {
                 requestAnimationFrame(processRows);
             } else {
-                progress.style.width = "100%";
                 result_text = text;
-                setTimeout(() => {
-                    processing.classList.remove("active");
-                }, 200);
-            };
-        };
-    requestAnimationFrame(processRows);
-};
+
+                if (!silent) {
+                    progress.style.width = "100%";
+                    setTimeout(() => {
+                        processing.classList.remove("active");
+                    }, 200);
+                }
+                resolve();
+            }
+        }
+        requestAnimationFrame(processRows);
+    });
+}
+
+
+async function previewVideoFrame() {
+    if (!is_media_load || !video.videoWidth || !video.videoHeight) return;
+
+    await new Promise((resolve) => {
+        video.onseeked = resolve;
+        video.currentTime = 0;
+    });
+
+    await convertToASCII(video, true);
+}
+
+
+video.onloadedmetadata = async function () {
+    outputVideo.style.display = "none";
+    outputCanvas.style.display = "block";
+    btnClipboard.style.display = "none";
+
+    topNoVideo.style.display = "none";
+    topVideo.style.display = "flex";
+
+    is_media_load = true;
+    is_video = false;
+
+    if (videoBlobUrl) {
+        URL.revokeObjectURL(videoBlobUrl);
+        videoBlobUrl = null;
+    }
+
+    processing.classList.remove("searching");
+    processingText.textContent = "Generating ASCII from video can take time...";
+    progress.style.width = "0%";
+
+    dropZone.classList.add("compact");
+    inputDescription.classList.add("compact");
+    outputCanvas.classList.remove("empty");   
+    
+    is_video = true
+
+    updateSaveButtonLabel();
+
+    await previewVideoFrame();
+}
+
+videoButton.addEventListener("click", () => {
+    is_video = true;
+    videoToASCII();
+});
 
 img.onload = function () {
-    is_img_load = true;
+    outputVideo.style.display = "none";
+    outputCanvas.style.display = "block";
+    btnClipboard.style.display = "block";
+    topVideo.style.display = "none";
+    topNoVideo.style.display = "flex";
+
+    is_media_load = true;
 
     processing.classList.remove("searching");
     processingText.textContent = "Generating ASCII...";
@@ -244,11 +394,12 @@ img.onload = function () {
     inputDescription.classList.add("compact");
     outputCanvas.classList.remove("empty");
 
-    convertToASCII();
+    updateSaveButtonLabel();
+    convertToASCII(img);
 };
 
 img.onerror = function () {
-    is_img_load = false;
+    is_media_load = false;
 
     processing.classList.remove("searching");
     processingText.textContent = "No image found";
@@ -266,7 +417,6 @@ async function getFirstImage(query) {
     const response = await fetch(
         `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(query)}&gsrnamespace=6&gsrlimit=20&prop=imageinfo&iiprop=url%7Cmime&format=json&origin=*`
     );
-
     if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
     }
@@ -277,7 +427,6 @@ async function getFirstImage(query) {
     if (!pages) {
         return null;
     }
-
     for (const page of Object.values(pages)) {
         const info = page.imageinfo?.[0];
 
@@ -287,7 +436,6 @@ async function getFirstImage(query) {
             return info.url;
         }
     }
-
     return null;
 }
 
@@ -298,12 +446,9 @@ async function searchAndConvert(query) {
     if (!query) return;
 
     const id = ++searchId;
-
     inputDescription.classList.add("loading");
-
     processing.classList.add("active");
     processing.classList.add("searching");
-
     processingText.textContent = "Searching image...";
     progress.style.width = "0%";
 
@@ -322,18 +467,14 @@ async function searchAndConvert(query) {
                     processing.classList.remove("active");
                 }
             }, 3000);
-
             return;
         }
-
-        is_img_load = false;
+        is_media_load = false;
         img.src = imageUrl;
-
     } catch (error) {
         if (id !== searchId) return;
 
         console.error(error);
-
         processing.classList.remove("searching");
         processingText.textContent = "No image found";
         progress.style.width = "0%";
@@ -356,10 +497,122 @@ inputDescription.addEventListener("keydown", (event) => {
     if (event.key !== "Enter") return;
 
     event.preventDefault();
-
     const query = inputDescription.value.trim();
 
     if (query) {
         searchAndConvert(query);
     }
 });
+
+
+async function videoToASCII () {
+    if (!is_media_load || !is_video) return;
+
+    if (!window.MediaRecorder) {
+        processing.classList.add("active");
+        processing.classList.remove("searching");
+        processingText.textContent = "Video export not supported in this browser";
+        progress.style.width = "0%";
+        setTimeout(() => processing.classList.remove("active"), 3000);
+        return;
+    }
+
+    const mimeType = pickSupportedMimeType();
+    if (!mimeType) {
+        processing.classList.add("active");
+        processing.classList.remove("searching");
+        processingText.textContent = "No supported video format in this browser";
+        progress.style.width = "0%";
+        setTimeout(() => processing.classList.remove("active"), 3000);
+        return;
+    }
+
+    videoButton.disabled = true;
+    videoButton.textContent = "CONVERTING...";
+
+    const duration = video.duration;
+    const fps = Number(sliderFPS.value);
+    const totalFrames = Math.max(1, Math.floor(duration * fps));
+    const frameInterval = 1000 / fps;
+
+    processing.classList.add("active");
+    processing.classList.remove("searching");
+    progress.style.width = "0%";
+
+    const frames = [];
+
+    for (let i = 0; i < totalFrames; i++) {
+        await new Promise((resolve) => {
+            video.onseeked = resolve;
+            video.currentTime = i / fps;
+        });
+        await convertToASCII(video, true);
+        frames.push(await createImageBitmap(outputCanvas));
+
+        processingText.textContent = `Extracting frames (${i + 1}/${totalFrames})...`;
+        progress.style.width = `${((i + 1) / totalFrames) * 50}%`;
+    }
+
+    processingText.textContent = "Encoding video...";
+
+    const stream = outputCanvas.captureStream(fps);
+
+    const recordedChunks = [];
+
+    const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: mimeType
+    });
+
+    mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+            recordedChunks.push(event.data);
+        }
+    };
+
+    const stopped = new Promise((resolve) => {
+        mediaRecorder.onstop = resolve;
+    });
+
+    mediaRecorder.start();
+
+    for (let i = 0; i < frames.length; i++) {
+        outputCtx.clearRect(
+            0,
+            0,
+            outputCanvas.width,
+            outputCanvas.height
+        );
+
+    outputCtx.drawImage(frames[i], 0, 0);
+
+    progress.style.width =
+        `${50 + ((i + 1) / frames.length) * 50}%`;
+
+    await sleep(frameInterval);
+}
+
+mediaRecorder.stop();
+
+await stopped;
+
+    frames.forEach((bitmap) => bitmap.close());
+
+    if (videoBlobUrl) URL.revokeObjectURL(videoBlobUrl);
+    const blob = new Blob(recordedChunks, { type: mimeType.split(";")[0] });
+    videoBlobUrl = URL.createObjectURL(blob);
+
+    progress.style.width = "100%";
+    setTimeout(() => processing.classList.remove("active"), 200);
+
+    videoButton.disabled = false;
+    videoButton.textContent = "CONVERT TO ASCII";
+    updateSaveButtonLabel();
+
+    outputCanvas.style.display = "none";
+    outputVideo.style.display = "block";
+
+    outputVideo.src = videoBlobUrl;
+
+    outputVideo.load();
+    outputVideo.play();
+}
