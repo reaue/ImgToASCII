@@ -248,7 +248,7 @@ inputDescription.addEventListener("keydown", async function (event) {
 
     if (!query) return;
 
-    const url = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(query)}&gsrnamespace=6&gsrlimit=1&prop=imageinfo&iiprop=url&format=json&origin=*`;
+    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(query)}?width=1024&height=1024`;
 
     async function getFirstImage() {
         try {
