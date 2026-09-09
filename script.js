@@ -380,7 +380,6 @@ async function previewVideoFrame() {
     outputCanvas.style.display = "block";
 
     await convertToASCII(video, true);
-
 }
 
 video.onloadedmetadata = async () => {
