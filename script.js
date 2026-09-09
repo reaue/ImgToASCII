@@ -147,11 +147,18 @@ document.addEventListener('drop', (e) => {
 function load(file) {
     if (!file) return;
 
+    is_media_load = false;
+
     if (file.type.startsWith("video/")) {
+        is_video = true;
         video.src = URL.createObjectURL(file);
+        video.load();
     } else {
         is_video = false;
-        video.src = "";
+        video.pause();
+        video.removeAttribute("src");
+        video.load();
+
         img.src = URL.createObjectURL(file);
     }
 }
@@ -159,10 +166,11 @@ function load(file) {
 output.innerHTML = slider.value;
 const debounceConvert = debounce(convertToASCII, 50)
 
+
 slider.addEventListener("input", function() {
     output.innerHTML = this.value;
 
-    if (video.src) {
+    if (is_video) {
         debounceConvert(video);
     } else {
         debounceConvert(img);
@@ -187,8 +195,8 @@ function debounce(func, timeout=100) {
 
 document.getElementById("checkbox-choice").addEventListener("change", function() {
     in_color = this.checked;
-    
-    if (video.src) {
+
+    if (is_video) {
         debounceConvert(video);
     } else {
         debounceConvert(img);
@@ -197,8 +205,8 @@ document.getElementById("checkbox-choice").addEventListener("change", function()
 
 document.getElementById("checkbox-invert-choice").addEventListener("change", function() {
     invert = this.checked;
-    
-    if (video.src) {
+
+    if (is_video) {
         debounceConvert(video);
     } else {
         debounceConvert(img);
@@ -350,7 +358,6 @@ video.onloadedmetadata = async function () {
     topVideo.style.display = "flex";
 
     is_media_load = true;
-    is_video = false;
 
     if (videoBlobUrl) {
         URL.revokeObjectURL(videoBlobUrl);
@@ -385,6 +392,7 @@ img.onload = function () {
     topNoVideo.style.display = "flex";
 
     is_media_load = true;
+    is_video = false;
 
     processing.classList.remove("searching");
     processingText.textContent = "Generating ASCII...";
