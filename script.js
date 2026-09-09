@@ -144,7 +144,7 @@ document.addEventListener('drop', (e) => {
     load(file);
 });
 
-function load(file) {
+async function load(file) {
     if (!file) return;
 
     is_media_load = false;
@@ -152,6 +152,11 @@ function load(file) {
     if (file.type.startsWith("video/")) {
         is_video = true;
         video.src = URL.createObjectURL(file);
+        video.load();
+    } else if (file.type === "image/gif") {
+        is_video = true;
+        const videoBlob = await convertGif(file);
+        video.src = URL.createObjectURL(videoBlob);
         video.load();
     } else {
         is_video = false;
