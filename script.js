@@ -250,7 +250,7 @@ inputDescription.addEventListener("keydown", async function (event) {
 
     if (!querry) return;
 
-    const url = `https://www.googleapis.com/customsearch/v1?key=${KEY}&cx=${CX_ID}&q=${encodeURIComponent(querry)}&searchType=image`;
+    const url = ;
 
     async function getFirstImage() {
         try {
