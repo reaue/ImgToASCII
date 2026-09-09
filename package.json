@@ -1,0 +1,30 @@
+{
+    "name": "imgtoascii",
+    "version": "1.0.0",
+    "description": "A web-based tool that converts images into ASCII art directly in your browser.",
+    "main": "script.js",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/reaue/ImgToASCII.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "type": "commonjs",
+    "bugs": {
+        "url": "https://github.com/reaue/ImgToASCII/issues"
+    },
+    "homepage": "https://github.com/reaue/ImgToASCII#readme",
+    "devDependencies": {
+        "vite": "^8.2.2"
+    },
+    "dependencies": {
+        "@ffmpeg/ffmpeg": "^0.12.15",
+        "@ffmpeg/util": "^0.12.2"
+    }
+}
