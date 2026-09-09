@@ -1,6 +1,3 @@
-const KEY = "__GOOGLE_API_KEY__";
-const CX_ID = "02c1c63584ca141ef"
-
 let fileInput = document.getElementById("input-file");
 let samplingCanvas = document.getElementById("sampling-canvas");
 let samplingCtx = samplingCanvas.getContext("2d");
@@ -246,11 +243,11 @@ inputDescription.addEventListener("keydown", async function (event) {
     if (event.key !== "Enter" || event.shiftKey) return;
     
     event.preventDefault();
-    const querry = inputDescription.value.trim();
+    const query = inputDescription.value.trim();
 
-    if (!querry) return;
+    if (!query) return;
 
-    const url = ;
+    const url = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(query)}&gsrnamespace=6&gsrlimit=1&prop=imageinfo&iiprop=url&format=json&origin=*`;
 
     async function getFirstImage() {
         try {
@@ -258,19 +255,28 @@ inputDescription.addEventListener("keydown", async function (event) {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.error?.message || `HTTP ${response.status}`);
+                throw new Error(`HTTP ${response.status}`);
             };
-            if (data.items && data.items.length > 0) {
-                const firstImage = data.items[0];
 
-                img.src = firstImage.link;
-            } else {
+            const pages = data.query?.pages;
+
+            if (!pages) {
                 inputDescription.value = "";
                 inputDescription.placeholder = "No image found...";
-            };
-        } catch (error) {
-            console.error(error);
+                return;
+            }
 
+            
+            const firstPage = Object.values(pages)[0];
+            const imageUrl = firstPage.imageinfo?.[0]?.url;
+
+            if (!imageUrl) {
+                throw new Error("No image URL found");
+            }
+
+            img.src = imageUrl;
+
+        } catch (error) {
             inputDescription.value = "";
             inputDescription.placeholder = "Having some trouble with the API...";
         };
