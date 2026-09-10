@@ -31,7 +31,7 @@ The main idea is that this following string : `.:-=+*#%@"` contains all level of
 
 # New features added for the V.3
 
-I added some new features requested by raters (thanks to them). First, a text to ASCII converter powered by the [Wikimedia API](https://commons.wikimedia.org/wiki/Accueil). I also added a video to ASCII converter (including GIF). I also added more way to export your ASCII art and finally tried to hand over the site more understandable and user-friendly.
+I added some new features requested by raters (thanks to them). First, a text to ASCII converter powered by the [Wikimedia API](https://commons.wikimedia.org/wiki/Accueil). I also added a video to ASCII converter (including GIF). An other improvement was that I added more way to export your ASCII art and finally tried to hand over the site more understandable and user-friendly.
 
 # How to run it locally
 
