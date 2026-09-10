@@ -142,7 +142,7 @@ async function load(file) {
     if (file.type === "image/gif") {
         is_video = true;
         processing.classList.add("active");
-        processingText.textContent = "Converting GIF to video...";
+        processingText.textContent = "Wait, your GIF is converting to video...";
         progress.style.width = "0%";
 
         try {
@@ -159,6 +159,7 @@ async function load(file) {
             setTimeout(() => processing.classList.remove("active"), 3000);
         }
 
+        processing.classList.remove("active");
         return;
     }
 
