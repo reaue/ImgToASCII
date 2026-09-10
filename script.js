@@ -301,8 +301,9 @@ async function convertToASCII(source, silent = false) {
     const charHeight = charWidth / RATIO;
     const displayHeight = charHeight * rows;
 
-    outputCanvas.width = DISPLAY_WIDTH;
-    outputCanvas.height = displayHeight;
+    outputCanvas.width = DISPLAY_WIDTH % 2 === 0 ? DISPLAY_WIDTH : DISPLAY_WIDTH + 1;
+    const rawHeight = Math.floor(displayHeight);
+    outputCanvas.height = rawHeight % 2 === 0 ? rawHeight : rawHeight + 1;
     outputCtx.font = `${charHeight}px "Courier Prime", monospace`;
     outputCtx.textBaseline = "top";
 
@@ -704,6 +705,10 @@ async function videoToASCII() {
             if (videoBlobUrl) URL.revokeObjectURL(videoBlobUrl);
 
             videoBlobUrl = URL.createObjectURL(mp4Blob);
+            const link = document.createElement("a");
+            link.href = videoBlobUrl;
+            link.download = "ascii.mp4";
+            link.click();
 
             outputCanvas.style.display = "none";
             outputVideo.style.display = "block";
