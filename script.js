@@ -53,6 +53,7 @@ let darkmode = localStorage.getItem("darkmode") !== "inactive";
 let saveTrigger = false
 let choice = "first"; // "first" or "second"
 let videoProcessing = false
+let videoFirstTime = true
 
 const ASCII = [" ", ".", ":", "-", "=", "+", "*", "#", "%", "@"];
 const RATIO = 0.55;
@@ -443,6 +444,7 @@ async function previewVideoFrame() {
 }
 
 video.onloadedmetadata = async () => {
+    videoFirstTime = true
     videoProcessing = true;
     btnSave.innerHTML = "DOWNLOAD <span>></span>";
     formatOptions.classList.remove("active");
@@ -699,7 +701,7 @@ async function videoToASCII() {
 
         processingText.textContent = "Encoding video...";
 
-        if (choice === "first") {
+        if (choice === "first" && !videoFirstTime) {
             const mp4Blob = await encodeFramesToMP4(frames, fps);
 
             if (videoBlobUrl) URL.revokeObjectURL(videoBlobUrl);
@@ -715,7 +717,7 @@ async function videoToASCII() {
             outputVideo.src = videoBlobUrl;
             outputVideo.load();
             outputVideo.onloadedmetadata = () => outputVideo.play();
-        } else {
+        } else if (!videoFirstTime) {
             const gifBlob = await encodeFramesToGIF(frames, fps);
             const gifUrl = URL.createObjectURL(gifBlob);
 
@@ -742,5 +744,6 @@ async function videoToASCII() {
     }
 
     videoButton.disabled = false;
+    videoFirstTime = false;
     videoButton.textContent = "CONVERT TO ASCII";
 }
