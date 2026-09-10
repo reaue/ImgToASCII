@@ -372,7 +372,9 @@ function seekTo(video, time, timeoutMs = 1000) {
 async function previewVideoFrame() {
     if (!is_media_load || !video.videoWidth || !video.videoHeight) return;
 
-    await seekTo(video, 0);
+    await seekTo(video, 1);
+
+    await convertToASCII(video, true);
 
     await new Promise(resolve => requestAnimationFrame(resolve));
 
