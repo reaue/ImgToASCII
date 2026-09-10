@@ -26,6 +26,10 @@ const slider = document.getElementById("Size");
 const sliderFPS = document.getElementById("FPS-slider");
 const output = document.getElementById("value");
 const outputFPS = document.getElementById("fps-value");
+const formatDropdwn = document.getElementById("format-dropdown");
+const formatOptions = document.getElementById("format-options");
+const firstChoice = document.getElementById("first-choice")
+const secondChoice = document.getElementById("second-choice")
 
 img.crossOrigin = "anonymous";
 video.muted = true;
@@ -46,13 +50,17 @@ let searchId = 0;
 let gifVideoUrl = null;
 let videoBlobUrl = null;
 let darkmode = localStorage.getItem("darkmode") !== "inactive";
+let saveTrigger = false
+let choice = "first"; // "first" or "second"
+let videoProcessing = false
 
 const ASCII = [" ", ".", ":", "-", "=", "+", "*", "#", "%", "@"];
 const RATIO = 0.55;
 const DISPLAY_WIDTH = 800;
 
 function updateSaveButtonLabel() {
-    btnSave.textContent = is_video ? "DOWNLOAD VIDEO" : "DOWNLOAD PNG";
+    firstChoice.textContent = is_video ? "MP4" : "PNG";
+    secondChoice.textContent = is_video ? "GIF" : "JPG";
 }
 
 function enableDarkmode() {
@@ -78,18 +86,66 @@ btnClipboard.addEventListener("click", async () => {
 });
 
 btnSave.addEventListener("click", () => {
-    const link = document.createElement("a");
+    if (!is_media_load) return;
+
+    if (videoProcessing) return;
+    
+    if (!saveTrigger) {
+        formatOptions.classList.toggle("active");
+        btnSave.innerHTML = "DOWNLOAD <span>∨</span>";
+        saveTrigger = true;
+        firstChoice.style.display = "block";
+        secondChoice.style.display = "block";
+    } else {
+        formatOptions.classList.toggle("remove");
+        btnSave.innerHTML = "DOWNLOAD <span>></span>";
+        saveTrigger = false;
+        firstChoice.style.display = "none";
+        secondChoice.style.display = "none";
+    }
+});
+
+firstChoice.addEventListener("click", () => {
+    if (!saveTrigger) return;
+
+    choice = "first";
+
+    saveTrigger = false;
+    formatOptions.classList.remove("active");
+    firstChoice.style.display = "none";
+    secondChoice.style.display = "none";
+    btnSave.innerHTML = "DOWNLOAD <span>></span>";
 
     if (is_video) {
-        if (!videoBlobUrl) return;
-        link.download = "ascii.mp4";
-        link.href = videoBlobUrl;
-    } else {
-        if (!is_media_load) return;
-        link.download = "ascii.png";
-        link.href = outputCanvas.toDataURL("image/png");
+        videoToASCII();
+        return;
     }
 
+    const link = document.createElement("a");
+    link.download = "ascii.png";
+    link.href = outputCanvas.toDataURL("image/png");
+    link.click();
+});
+
+secondChoice.addEventListener("click", () => {
+    if (!saveTrigger) return;
+
+    choice = "second";
+
+    saveTrigger = false;
+    formatOptions.classList.remove("active");
+    firstChoice.style.display = "none";
+    secondChoice.style.display = "none";
+    btnSave.innerHTML = "DOWNLOAD <span>></span>";
+
+    if (is_video) {
+        videoToASCII();
+        return;
+    }
+
+    const link = document.createElement("a");
+    link.download = "ascii.jpg";
+    link.href = outputCanvas.toDataURL("image/jpeg");
     link.click();
 });
 
@@ -386,6 +442,12 @@ async function previewVideoFrame() {
 }
 
 video.onloadedmetadata = async () => {
+    videoProcessing = true;
+    btnSave.innerHTML = "DOWNLOAD <span>></span>";
+    formatOptions.classList.remove("active");
+    firstChoice.style.display = "none";
+    secondChoice.style.display = "none";
+
     outputVideo.pause();
     outputVideo.removeAttribute("src");
     outputVideo.load();
@@ -416,6 +478,7 @@ videoButton.addEventListener("click", () => {
 });
 
 img.onload = () => {
+    videoProcessing = false;
     outputVideo.style.display = "none";
     outputCanvas.style.display = "block";
     btnClipboard.style.display = "block";
@@ -569,6 +632,37 @@ async function encodeFramesToMP4(frames, fps) {
     return new Blob([data], { type: "video/mp4" });
 }
 
+async function encodeFramesToGIF(frames, fps) {
+    if (!ffmpeg.loaded) await ffmpeg.load();
+
+    try {
+        await ffmpeg.deleteFile("ascii.gif");
+    } catch {}
+
+    for (let i = 0; i < frames.length; i++) {
+        const blob = await new Promise(resolve => frames[i].toBlob(resolve, "image/png"));
+
+        if (!blob) throw new Error("Failed to create frame");
+
+        await ffmpeg.writeFile(`frame${String(i).padStart(5, "0")}.png`, await fetchFile(blob));
+    }
+
+    await ffmpeg.exec([
+        "-y",
+        "-framerate", String(fps),
+        "-i", "frame%05d.png",
+        "-vf", "split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse",
+        "-loop", "0",
+        "ascii.gif"
+    ]);
+
+    const data = await ffmpeg.readFile("ascii.gif");
+
+    if (!data.length) throw new Error("FFmpeg generated an empty GIF");
+
+    return new Blob([data], { type: "image/gif" });
+}
+
 async function videoToASCII() {
     if (!is_media_load || !is_video) return;
 
@@ -595,7 +689,6 @@ async function videoToASCII() {
             const frame = document.createElement("canvas");
             frame.width = outputCanvas.width;
             frame.height = outputCanvas.height;
-
             frame.getContext("2d").drawImage(outputCanvas, 0, 0);
             frames.push(frame);
 
@@ -605,21 +698,36 @@ async function videoToASCII() {
 
         processingText.textContent = "Encoding video...";
 
-        const mp4Blob = await encodeFramesToMP4(frames, fps);
+        if (choice === "first") {
+            const mp4Blob = await encodeFramesToMP4(frames, fps);
 
-        if (videoBlobUrl) URL.revokeObjectURL(videoBlobUrl);
+            if (videoBlobUrl) URL.revokeObjectURL(videoBlobUrl);
 
-        videoBlobUrl = URL.createObjectURL(mp4Blob);
+            videoBlobUrl = URL.createObjectURL(mp4Blob);
 
-        outputCanvas.style.display = "none";
-        outputVideo.style.display = "block";
-        outputVideo.src = videoBlobUrl;
-        outputVideo.load();
+            outputCanvas.style.display = "none";
+            outputVideo.style.display = "block";
+            outputVideo.src = videoBlobUrl;
+            outputVideo.load();
+            outputVideo.onloadedmetadata = () => outputVideo.play();
+        } else {
+            const gifBlob = await encodeFramesToGIF(frames, fps);
+            const gifUrl = URL.createObjectURL(gifBlob);
 
-        outputVideo.onloadedmetadata = () => outputVideo.play();
+            const link = document.createElement("a");
+            link.href = gifUrl;
+            link.download = "ascii.gif";
+            link.click();
+
+            setTimeout(() => URL.revokeObjectURL(gifUrl), 1000);
+        }
 
         progress.style.width = "100%";
         processingText.textContent = "Conversion complete";
+
+        videoProcessing = false;
+        btnSave.innerHTML = "DOWNLOAD <span>></span>";
+        formatOptions.classList.add("active");
 
         setTimeout(() => processing.classList.remove("active"), 500);
     } catch {

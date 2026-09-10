@@ -282,13 +282,13 @@ button {
     letter-spacing: 2px;
 }
 
-.txt-button {
+.txt-button, #first-choice, #second-choice {
     background-color: var(--base-color);
     color: var(--font-color);
     border: 1px solid var(--border-color);
 }
 
-.txt-button:hover {
+.txt-button:hover, #first-choice:hover, #second-choice:hover {
     color: var(--font-color);
     border-color: var(--font-color);
 }
@@ -442,4 +442,9 @@ textarea {
     width: min(800px, 100%);
     height: auto;
     margin: 0 auto;
+}
+
+#btn-save, #first-choice, #second-choice {
+    width: 130px;
+    margin-top: 2px;
 }

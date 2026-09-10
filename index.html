@@ -78,7 +78,13 @@
                 
                     <div class="control-actions">
                         <button id="btn-clipboard" class="txt-button">COPY</button>
-                        <button id="btn-save" class="download-button">DOWNLOAD PNG</button>
+                        <div id="format-dropdown">
+                            <button id="btn-save" class="download-button">DOWNLOAD <span>></span></button>
+                            <div id="format-options">
+                                <button id="first-choice" style="display: none;">PNG</button>
+                                <button id="second-choice" style="display: none;">JPG</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </main>
