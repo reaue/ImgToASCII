@@ -1,6 +1,6 @@
 # Image to ASCII art.
 
-A web-based tool that converts images into ASCII art directly in your browser.
+A web-based tool that converts images, videos and text into ASCII art directly in your browser.
 
 ![alt text](result.png)
 
@@ -15,10 +15,11 @@ Want to try it yourself ?  [**DEMO**](https://reaue.github.io/ImgToASCII/)
 - All the window is a drag and drop zone. 
 - Choose between full-color or black and white rendering.
 - Choose if you want to see your image in invert mod or not.
-- Copy directly to cliboard or export as a png image with in one click.
+- Copy directly to cliboard in one click.
+- Save as different extensions such as `PNG`, `JPG`, `GIF` and `MP4`. 
 - See a real time loading bar when your pc calculate for the render.
-- A text to ASCII converter powered by [Wikimedia API](https://commons.wikimedia.org/wiki/Accueil)
-- A video to ASCII converter (don't see too big, it's not done for big video or high color rendering)
+- A text to ASCII converter powered by [Wikimedia API](https://commons.wikimedia.org/wiki/Accueil).
+- A video to ASCII converter (don't see too big, it's not done for big video or high color rendering).
 
 ## Proof of concept
 
@@ -30,7 +31,7 @@ The main idea is that this following string : `.:-=+*#%@"` contains all level of
 
 # New features added for the V.3
 
-I added some new features requested by raters (thanks to them). First, a text to ASCII converter powered by the [Wikimedia API](https://commons.wikimedia.org/wiki/Accueil). I also added a video to ASCII converter. And finally tried to hand over the site more understandable and user-friendly.
+I added some new features requested by raters (thanks to them). First, a text to ASCII converter powered by the [Wikimedia API](https://commons.wikimedia.org/wiki/Accueil). I also added a video to ASCII converter (including GIF). I also added more way to export your ASCII art and finally tried to hand over the site more understandable and user-friendly.
 
 # How to run it locally
 
@@ -52,9 +53,3 @@ python main.py
 ```
 
 I added terminal commands to choose between different options for this python program (but it has only basic feature, convert image to ASCII only in black and white).
-
-# Possible features incoming
-
-- [x] A describe to ASCII converter based on Google API search
-- [x] Adding video (it will cost a lot of calculation time)
-- [x] Fixing the copy feature
